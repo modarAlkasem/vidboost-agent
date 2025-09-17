@@ -4,3 +4,6 @@ djangorestframework~=3.16.1
 django-allauth~=65.11.2
 djangorestframework-simplejwt~=5.5.1
 django-cors-headers~=4.8.0
+python-decouple==3.8
+requests~=2.32.5
+cryptography~=46.0.1
