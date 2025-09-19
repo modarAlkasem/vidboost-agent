@@ -15,7 +15,7 @@ const agentPulseVariants = cva("rounded-full animate-pulse", {
   },
 });
 
-function AgentPluse({
+function AgentPulse({
   className,
   size,
 }: { className?: string } & VariantProps<typeof agentPulseVariants>) {
@@ -30,4 +30,4 @@ function AgentPluse({
   );
 }
 
-export default AgentPluse;
+export default AgentPulse;

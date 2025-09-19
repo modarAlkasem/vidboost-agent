@@ -2,18 +2,9 @@
 
 import React from "react";
 import Link from "next/link";
-import AgentPluse from "./agent-pluse";
+import AgentPulse from "./agent-pulse";
 import { Button } from "./ui/button";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  DialogClose,
-} from "./ui/dialog";
+import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog";
 
 import { AuthForm } from "./forms/auth-form";
 
@@ -27,7 +18,7 @@ function Header() {
         {/** Left Section */}
         <div className=" flex items-center justify-between ">
           <Link href="/" className="flex items-center justify-between gap-x-4">
-            <AgentPluse size="md" />
+            <AgentPulse size="md" />
             <h1 className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-blue-400 text-transparent bg-clip-text">
               VidBoost Agent
             </h1>

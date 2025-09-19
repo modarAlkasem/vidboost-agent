@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { email, z } from "zod";
+import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -209,8 +209,14 @@ export const AuthForm = () => {
             >
               Don’t have an account?{" "}
               <Button
+                type="button"
                 className="bg-transparent p-0 hover:bg-transparent hover:cursor-pointer ml-1 text-blue-600 hover:text-blue-600/50"
-                onClick={() => setFormMode("SIGN_UP")}
+                onClick={() => {
+                  form.clearErrors();
+                  form.reset();
+
+                  setFormMode("SIGN_UP");
+                }}
               >
                 {" "}
                 Sign Up
@@ -230,6 +236,7 @@ export const AuthForm = () => {
             >
               Already have an account?{" "}
               <Button
+                type="button"
                 onClick={() => {
                   form.clearErrors();
                   form.reset();
