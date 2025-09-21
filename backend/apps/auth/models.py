@@ -16,7 +16,7 @@ from .constants import (
 
 
 class User(TimeStampMixin):
-    name = models.CharField("name", max_length=150, blank=True)
+    name = models.CharField("name", max_length=150, blank=True, null=True)
     email = models.EmailField("email", blank=True)
     password = models.CharField("password", max_length=128, blank=True, null=True)
     verified_at = models.DateTimeField("verified at", blank=True, null=True)
