@@ -7,7 +7,7 @@ from rest_framework.serializers import ValidationError
 from core.response import Response
 
 # App Imports
-from ..serializers import SignUpModelSerializer, UserModelSerializer
+from ..serializers import SignUpModelSerializer, UserModelSerializer, SignInSerializer
 from ..constants import SignUpErrorCodeChoices
 
 
@@ -28,11 +28,13 @@ class AuthService:
             }
 
         except ValidationError as e:
+
             response = {
                 "data": e.detail,
                 "status_code": status.HTTP_400_BAD_REQUEST,
                 "status_text": "BAD_REQUEST",
             }
+
             if "email" in e.detail:
                 for error in e.detail["email"]:
                     if (
@@ -41,4 +43,11 @@ class AuthService:
                     ):
                         response["status_text"] = error.code
 
-            return response
+        return Response(**response)
+
+    def sign_in(self, request: Request) -> Response:
+        data = request.data
+        serializer = SignInSerializer(data=data)
+
+        if serializer.is_valid(raise_exception=True):
+            return Response(data=serializer.validated_data)

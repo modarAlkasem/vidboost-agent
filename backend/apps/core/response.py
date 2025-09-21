@@ -12,11 +12,11 @@ class Response(DRFResponse):
     def __init__(
         self,
         data: Any = None,
-        status_code=Union[int, None],
-        status_text=Union[str, None],
-        template_name=Union[str, None],
-        headers=Union[dict, None],
-        content_type=Union[str, None],
+        status_code: Union[int, None] = None,
+        status_text: Union[str, None] = None,
+        template_name: Union[str, None] = None,
+        headers: Union[dict, None] = None,
+        content_type: Union[str, None] = None,
     ):
         if status_text:
             self._status_text = status_text

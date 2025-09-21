@@ -23,6 +23,11 @@ class User(TimeStampMixin):
     last_signed_in = models.DateTimeField("last signed in", blank=True, null=True)
     disabled = models.BooleanField("disabled", default=False)
 
+    REQUIRED_FIELDS = ()
+    USERNAME_FIELD = "email"
+    is_anonymous = False
+    is_authenticated = False
+
 
 class Account(TimeStampMixin):
     id = models.UUIDField("ID", primary_key=True, editable=False, default=uuid.uuid4)

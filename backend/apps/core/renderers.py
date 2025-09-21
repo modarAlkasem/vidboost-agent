@@ -23,7 +23,7 @@ class JSONRenderer(DRFJSONRenderer):
             "status_code": status_code,
         }
 
-        if status_code >= 400:
+        if status_code < 400:
             wrapped_data["data"] = data
         else:
             wrapped_data["errors"] = data
@@ -33,5 +33,7 @@ class JSONRenderer(DRFJSONRenderer):
 
         elif status_text == "SUCCESS" and status_code >= 400:
             status_text = "BAD_REQUEST"
+
+        wrapped_data["status_text"] = status_text
 
         return super().render(wrapped_data, accepted_media_type, renderer_context)
