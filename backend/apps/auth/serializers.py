@@ -16,6 +16,14 @@ from .constants import (
 
 class UserModelSerializer(serializers.ModelSerializer):
 
+    def to_internal_value(self, data):
+        email = data["email"]
+
+        if email:
+            data["email"] = email.strip().lower()
+
+        return super().to_internal_value(data)
+
     def validate_password(self, value) -> str:
         hashed_password = None
 
@@ -55,3 +63,6 @@ class SignUpModelSerializer(UserModelSerializer):
             Account.objects.create(**account_data)
 
         return user
+
+    class Meta(UserModelSerializer.Meta):
+        pass
