@@ -7,7 +7,12 @@ from rest_framework.serializers import ValidationError
 from core.response import Response
 
 # App Imports
-from ..serializers import SignUpModelSerializer, UserModelSerializer, SignInSerializer
+from ..serializers import (
+    SignUpModelSerializer,
+    UserModelSerializer,
+    SignInSerializer,
+    SignInSocialModerSerializer,
+)
 from ..constants import SignUpErrorCodeChoices
 
 
@@ -48,6 +53,13 @@ class AuthService:
     def sign_in(self, request: Request) -> Response:
         data = request.data
         serializer = SignInSerializer(data=data)
+
+        if serializer.is_valid(raise_exception=True):
+            return Response(data=serializer.validated_data)
+
+    def sign_in_social(self, request: Request) -> Response:
+        data = request.data
+        serializer = SignInSocialModerSerializer(data=data)
 
         if serializer.is_valid(raise_exception=True):
             return Response(data=serializer.validated_data)

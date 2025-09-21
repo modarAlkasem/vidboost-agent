@@ -21,3 +21,12 @@ class AuthViewSet(ViewSet):
     @action(methods=["POST"], detail=False, url_name="signin", url_path="signin")
     def sign_in(self, request: Request) -> Response:
         return self.service.sign_in(request)
+
+    @action(
+        methods=["POST"],
+        detail=False,
+        url_name="signin-social",
+        url_path="social/signin",
+    )
+    def sign_in_social(self, request: Request) -> Response:
+        return self.service.sign_in_social(request)

@@ -126,3 +126,65 @@ class SignInSerializer(serializers.Serializer):
                 "refresh_token": str(refresh_token),
             },
         }
+
+
+class AccountModelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Account
+        fields = "__all__"
+
+
+class AccountWithUserModelSerializer(AccountModelSerializer):
+    user = UserModelSerializer()
+
+    class Meta(AccountModelSerializer.Meta):
+        pass
+
+
+class SignInSocialModerSerializer(AccountWithUserModelSerializer):
+
+    ip_address = serializers.IPAddressField(required=False)
+    user_agent = serializers.CharField()
+
+    def validate(self, attrs: dict[str, Any]):
+        user = User.objects.filter(email=attrs.get("email")).first()
+        audit_log_data = {
+            "ip_address": attrs.get("ip_address"),
+            "user_agent": attrs.get("user_agent"),
+        }
+
+        if not user:
+            User.objects.create(**attrs.get("user"))
+
+        else:
+            for key, value in attrs.get("user").items():
+                setattr(user, key, value)
+
+            user.save()
+
+        account = Account.objects.filter(
+            provider=attrs.get("provider"),
+            provider_account_id=attrs.get("provider_account_id"),
+        ).first()
+
+        if not account:
+            attrs["user"] = user
+            account = Account.objects.create(**attrs)
+
+        audit_log_data["type"] = UserSecurityAuditLogTypeChoices.SIGN_IN_OAUTH.value
+        UserSecurityAuditLog.objects.create(**audit_log_data)
+
+        refresh_token = RefreshToken.for_user(user)
+        access_token = str(refresh_token.access_token)
+
+        return {
+            "account": AccountWithUserModelSerializer(instance=account).data,
+            "tokens": {
+                "access_token": access_token,
+                "refresh_token": str(refresh_token),
+            },
+        }
+
+    class Meta(AccountWithUserModelSerializer.Meta):
+        pass

@@ -27,6 +27,7 @@ class User(TimeStampMixin):
     USERNAME_FIELD = "email"
     is_anonymous = False
     is_authenticated = False
+    is_active = True
 
 
 class Account(TimeStampMixin):
