@@ -18,3 +18,7 @@ class UserSecurityAuditLogTypeChoices(TextChoices):
     SIGN_OUT = "SIGN_OUT"
     SIGN_IN_FAIL = "SIGN_IN_FAIL"
     SIGN_IN_OAUTH_FAIL = "SIGN_IN_OAUTH_FAIL"
+
+
+class SignUpErrorCodeChoices(TextChoices):
+    EMAIL_ALREADY_EXISTING = "EMAIL_ALREADY_EXISTING"

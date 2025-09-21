@@ -17,7 +17,7 @@ from .constants import (
 
 class User(TimeStampMixin):
     name = models.CharField("name", max_length=150, blank=True, null=True)
-    email = models.EmailField("email", blank=True)
+    email = models.EmailField("email", blank=True, unique=True)
     password = models.CharField("password", max_length=128, blank=True, null=True)
     verified_at = models.DateTimeField("verified at", blank=True, null=True)
     last_signed_in = models.DateTimeField("last signed in", blank=True, null=True)
