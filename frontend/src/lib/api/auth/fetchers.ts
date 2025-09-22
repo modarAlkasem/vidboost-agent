@@ -8,7 +8,7 @@ import {
   SignInSocialResponse,
 } from "./types";
 
-export const signUp = async ({ email, password }: SignUpPayload) => {
+export const signUpFetcher = async ({ email, password }: SignUpPayload) => {
   const response = await api.post<ApiResponse<SignUpResponse>>(
     "/auth/signup/",
     {
@@ -19,7 +19,7 @@ export const signUp = async ({ email, password }: SignUpPayload) => {
   return response.data.data;
 };
 
-export const signIn = async ({
+export const signInFetcher = async ({
   email,
   password,
   ip_address,
@@ -37,7 +37,7 @@ export const signIn = async ({
   return response.data.data;
 };
 
-export const signInSocial = async ({
+export const signInSocialFetcher = async ({
   id_token,
   provider,
   user_agent,

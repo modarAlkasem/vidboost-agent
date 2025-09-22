@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
+import { toast } from "sonner";
 
 import {
   Form,
@@ -19,6 +20,7 @@ import {
 import { Input } from "../ui/input";
 import { PasswordInput } from "../ui/password-input";
 import { Button } from "../ui/button";
+import { signUpFetcher } from "@/lib/api";
 
 const ZSignUpSchema = z.object({
   email: z.string().email(),
@@ -75,6 +77,8 @@ export const AuthForm = () => {
   };
 
   const onSignUpFormSubmit = async ({ email, password }: TSignInSchema) => {
+    try {
+    } catch {}
     console.log("Sign Up form is submitting...");
   };
 
