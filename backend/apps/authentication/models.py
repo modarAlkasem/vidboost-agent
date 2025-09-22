@@ -19,9 +19,10 @@ class User(TimeStampMixin):
     name = models.CharField("name", max_length=150, blank=True, null=True)
     email = models.EmailField("email", blank=True, unique=True)
     password = models.CharField("password", max_length=128, blank=True, null=True)
-    verified_at = models.DateTimeField("verified at", blank=True, null=True)
+    email_verified = models.BooleanField("email verified", default=False)
     last_signed_in = models.DateTimeField("last signed in", blank=True, null=True)
     disabled = models.BooleanField("disabled", default=False)
+    picture = models.CharField("picture", max_length=255, null=True, blank=True)
 
     REQUIRED_FIELDS = ()
     USERNAME_FIELD = "email"
@@ -53,6 +54,7 @@ class Account(TimeStampMixin):
     token_type = models.CharField("token type", max_length=10, blank=True, null=True)
     scope = models.TextField("scope", blank=True, null=True)
     id_token = models.TextField("ID Token", blank=True, null=True)
+    expires_at = models.DateTimeField("Expires at", null=True, blank=True)
 
     class Meta:
         verbose_name = "account"

@@ -19,7 +19,9 @@ from .constants import (
     AccountProviderChoices,
     AccountTypeChoices,
     UserSecurityAuditLogTypeChoices,
+    OAuthProviderChoices,
 )
+from .utils import validate_google_id_token
 
 
 class UserModelSerializer(serializers.ModelSerializer):
@@ -142,49 +144,61 @@ class AccountWithUserModelSerializer(AccountModelSerializer):
         pass
 
 
-class SignInSocialModerSerializer(AccountWithUserModelSerializer):
+class SignInSocialModerSerializer(serializers.ModelSerializer):
 
+    provider = serializers.ChoiceField(choices=OAuthProviderChoices.choices)
+    id_token = serializers.CharField()
     ip_address = serializers.IPAddressField(required=False)
     user_agent = serializers.CharField()
 
     def validate(self, attrs: dict[str, Any]):
-        user = User.objects.filter(email=attrs.get("email")).first()
+        data = validate_google_id_token(attrs.get("id_token"))
         audit_log_data = {
             "ip_address": attrs.get("ip_address"),
             "user_agent": attrs.get("user_agent"),
         }
 
-        if not user:
-            User.objects.create(**attrs.get("user"))
+        if not data:
+            audit_log_data["type"] = (
+                UserSecurityAuditLogTypeChoices.SIGN_IN_OAUTH_FAIL.value
+            )
+            UserSecurityAuditLog.objects.create(**audit_log_data)
 
-        else:
-            for key, value in attrs.get("user").items():
-                setattr(user, key, value)
+        with atomic(durable=True):
 
-            user.save()
+            user = User.objects.filter(email=data["user"].get("email")).first()
 
-        account = Account.objects.filter(
-            provider=attrs.get("provider"),
-            provider_account_id=attrs.get("provider_account_id"),
-        ).first()
+            if not user:
+                User.objects.create(**data.get("user"))
 
-        if not account:
-            attrs["user"] = user
-            account = Account.objects.create(**attrs)
+            else:
+                for key, value in data.get("user").items():
+                    setattr(user, key, value)
 
-        audit_log_data["type"] = UserSecurityAuditLogTypeChoices.SIGN_IN_OAUTH.value
-        UserSecurityAuditLog.objects.create(**audit_log_data)
+                user.save()
 
-        refresh_token = RefreshToken.for_user(user)
-        access_token = str(refresh_token.access_token)
+            account = Account.objects.filter(
+                provider=data.get("provider"),
+                provider_account_id=data.get("provider_account_id"),
+            ).first()
 
-        return {
-            "account": AccountWithUserModelSerializer(instance=account).data,
-            "tokens": {
-                "access_token": access_token,
-                "refresh_token": str(refresh_token),
-            },
-        }
+            if not account:
+                data["user"] = user
+                account = Account.objects.create(**data)
+
+            audit_log_data["type"] = UserSecurityAuditLogTypeChoices.SIGN_IN_OAUTH.value
+            UserSecurityAuditLog.objects.create(**audit_log_data)
+
+            refresh_token = RefreshToken.for_user(user)
+            access_token = str(refresh_token.access_token)
+
+            return {
+                "user": UserModelSerializer(instance=account.user).data,
+                "tokens": {
+                    "access_token": access_token,
+                    "refresh_token": str(refresh_token),
+                },
+            }
 
     class Meta(AccountWithUserModelSerializer.Meta):
         pass

@@ -154,3 +154,10 @@ SIMPLE_JWT = {
     "BLACKLIST_AFTER_ROTATION": True,
     "TOKEN_OBTAIN_SERIALIZER": None,
 }
+
+OAUTH_PROVIDERS = {
+    "google": {
+        "client_id": config("GOOGLE_CLIENT_ID"),
+        "client_secret": config("GOOGLE_CLIENT_SECRET"),
+    }
+}

@@ -9,7 +9,11 @@ class AccountTypeChoices(TextChoices):
 
 class AccountProviderChoices(TextChoices):
     CREDENTIALS = "credentials"
-    OAUTH = "google"
+    GOOGLE = "google"
+
+
+class OAuthProviderChoices(TextChoices):
+    GOOGLE = "google"
 
 
 class UserSecurityAuditLogTypeChoices(TextChoices):
