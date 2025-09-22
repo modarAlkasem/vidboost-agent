@@ -113,7 +113,7 @@ export default function Home() {
               return (
                 <div
                   key={index}
-                  className="p-6 rounded-xl border border-blue-400 hover:border-blue-600 transition-shadow duration-300"
+                  className="p-6 rounded-xl border border-gray-200 hover:border-blue-600  transition-shadow duration-300"
                 >
                   <div
                     className={cn(

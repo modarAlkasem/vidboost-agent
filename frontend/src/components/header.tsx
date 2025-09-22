@@ -12,7 +12,7 @@ function Header() {
   const signedIn = false;
 
   return (
-    <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-600 ">
+    <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-200 ">
       <div className="container mx-auto flex justify-between items-center h-16">
         {" "}
         {/** Left Section */}
