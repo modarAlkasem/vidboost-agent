@@ -21,6 +21,7 @@ import { Input } from "../ui/input";
 import { PasswordInput } from "../ui/password-input";
 import { Button } from "../ui/button";
 import { signUpFetcher } from "@/lib/api";
+import { AppErrorCode } from "@/lib/errors/app-error";
 
 const ZSignUpSchema = z.object({
   email: z.string().email(),
@@ -56,6 +57,28 @@ const ZSignInSchema = z.object({
 
 type TSignInSchema = z.infer<typeof ZSignInSchema>;
 
+const signUpErrorMessages: Record<string, string> = {
+  [AppErrorCode.EMAIL_ALREADY_EXISTS]:
+    "User with this email already exists. please use a different email address.",
+  [AppErrorCode.INVALID_REQUEST]:
+    "We are unable to create your account. please review the information you provided then try again.",
+  [AppErrorCode.UNKNOWN_ERROR]:
+    "We are unable to create your account. please try again later.",
+};
+
+const signInErrorMessages: Record<string, string> = {
+  [AppErrorCode.EMAIL_ALREADY_EXISTS]:
+    "User with this email already exists. please use a different email address.",
+  [AppErrorCode.INVALID_REQUEST]:
+    "We are unable to sign you in. please review the information you provided then try again.",
+  [AppErrorCode.UNKNOWN_ERROR]:
+    "We are unable to sign you in. please try again later.",
+};
+
+const signInSocialErrorMessages: Record<string, string> = {
+  [AppErrorCode.UNKNOWN_ERROR]: signInErrorMessages[AppErrorCode.UNKNOWN_ERROR],
+};
+
 export const AuthForm = () => {
   const [formMode, setFormMode] = useState<"SIGN_IN" | "SIGN_UP">("SIGN_IN");
   const form = useForm<TSignInSchema>({
@@ -78,8 +101,26 @@ export const AuthForm = () => {
 
   const onSignUpFormSubmit = async ({ email, password }: TSignInSchema) => {
     try {
-    } catch {}
-    console.log("Sign Up form is submitting...");
+      await signUpFetcher({ email, password });
+      toast.success("Registeration Successful", {
+        description: "You have successfully registered.",
+        duration: 5000,
+        position: "top-right",
+      });
+      form.reset();
+      setFormMode("SIGN_IN");
+    } catch (error: any) {
+      console.log(error);
+      const errorMessage =
+        signUpErrorMessages[error.status_text] ??
+        signUpErrorMessages[AppErrorCode.UNKNOWN_ERROR];
+
+      toast.error("Something went wrong.", {
+        description: errorMessage,
+        duration: 5000,
+        position: "top-right",
+      });
+    }
   };
 
   return (

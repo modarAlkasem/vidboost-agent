@@ -32,6 +32,7 @@ interface APIUser {
   email_verified: boolean;
   last_signed_in: string | null;
   disabled: boolean;
+  picture: string | null;
   created_at: string;
   updated_at: string;
 }

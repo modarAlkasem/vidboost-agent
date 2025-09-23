@@ -16,7 +16,7 @@ export const signUpFetcher = async ({ email, password }: SignUpPayload) => {
       password,
     }
   );
-  return response.data.data;
+  return response.data;
 };
 
 export const signInFetcher = async ({
@@ -25,16 +25,13 @@ export const signInFetcher = async ({
   ip_address,
   user_agent,
 }: SignInPayload) => {
-  const response = await api.post<ApiResponse<SignInResponse>>(
-    "/auth/signin/",
-    {
-      email,
-      password,
-      ip_address,
-      user_agent,
-    }
-  );
-  return response.data.data;
+  const response = await api.post<SignInResponse>("/auth/signin/", {
+    email,
+    password,
+    ip_address,
+    user_agent,
+  });
+  return response.data;
 };
 
 export const signInSocialFetcher = async ({
@@ -52,5 +49,5 @@ export const signInSocialFetcher = async ({
       ip_address,
     }
   );
-  return response.data.data;
+  return response.data;
 };

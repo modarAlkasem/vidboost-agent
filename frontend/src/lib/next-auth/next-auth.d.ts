@@ -6,25 +6,28 @@ declare module "next-auth" {
     name: string | null;
     email: string;
     email_verified: bolean;
-    password: string | null;
+
     last_signed_in: string;
     disabled: boolean;
+    picture: string | null;
     access_token: string;
     refresh_token: string;
   }
 
   interface Session {
-    user: Omit<User, "access_token" | "refresh_token">;
+    user: Omit<User, "id", "access_token" | "refresh_token"> & {
+      id: number | string;
+    };
     accessToken: string;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    id: number;
-    name: string;
+    id: number | string;
+    name: string | null;
     email: string;
-    emailVerified: boolean;
+    emailVerified: Date | null;
     lastSignedIn: string;
     accessToken: string;
     refreshToken: string;

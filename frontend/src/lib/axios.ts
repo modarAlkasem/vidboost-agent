@@ -9,4 +9,9 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use(
+  (response) => response.data,
+  (error) => Promise.reject(error.response.data || error.message)
+);
+
 export default api;
