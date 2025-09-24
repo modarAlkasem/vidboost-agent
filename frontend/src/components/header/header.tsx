@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 
-import AgentPulse from "./agent-pulse";
-import { Button } from "./ui/button";
-import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog";
-import { AuthForm } from "./forms/auth-form";
+import AgentPulse from "../agent-pulse";
+import { Button } from "../ui/button";
+import { Dialog, DialogTrigger, DialogContent } from "../ui/dialog";
+import { AuthForm } from "../forms/auth-form";
+import UserButton from "./user-button";
 
 function Header() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
@@ -15,7 +16,7 @@ function Header() {
   const user = session?.user;
 
   return (
-    <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-200 ">
+    <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-600">
       <div className="container mx-auto flex justify-between items-center h-16">
         {" "}
         {/** Left Section */}
@@ -34,18 +35,15 @@ function Header() {
               <Link href="/manage-plan">
                 <Button
                   variant="outline"
-                  className=" border-blue-500 bg-transparent text-blue-500 hover:text-blue-300 hover:border-blue-300 hover:bg-[#121224] hover:cursor-pointer "
+                  className=" border-blue-600 bg-transparent text-blue-600 hover:text-blue-300 hover:border-blue-300 hover:bg-[#121224] hover:cursor-pointer "
                 >
                   {" "}
                   Manage Plan
                 </Button>
               </Link>
-              <Button
-                variant="outline"
-                className="text-blue-500 bg-transparent border-none hover:text-blue-300  hover:bg-transparent"
-              >
-                Sign Out
-              </Button>
+              <div className="flex items-center justify-center w-10 h-10 border border-blue-600 bg-blue-200 rounded-full hover:bg-[#121224] hover:cursor-pointer hover:border-blue-200 p-2">
+                <UserButton />
+              </div>
             </>
           ) : (
             <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
