@@ -20,6 +20,7 @@ from .constants import (
     AccountTypeChoices,
     UserSecurityAuditLogTypeChoices,
     OAuthProviderChoices,
+    SignInErrorCodeChoices,
 )
 from .utils import validate_google_id_token
 
@@ -56,7 +57,7 @@ class SignUpModelSerializer(UserModelSerializer):
         if User.objects.filter(email=value).exists():
             raise serializers.ValidationError(
                 "Invalid Email",
-                SignUpErrorCodeChoices.EMAIL_ALREADY_EXISTING.value,
+                SignUpErrorCodeChoices.EMAIL_ALREADY_EXISTS.value,
             )
         return value
 
@@ -94,7 +95,6 @@ class SignInSerializer(serializers.Serializer):
         return super().to_internal_value(data)
 
     def validate(self, attrs: dict[str, Any]):
-
         user = User.objects.filter(email=attrs.get("email")).first()
         audit_log_data = {
             "ip_address": attrs.get("ip_address"),
@@ -102,15 +102,41 @@ class SignInSerializer(serializers.Serializer):
         }
 
         if not user:
-            raise serializers.ValidationError({"email": "Invalid Email"})
+            raise serializers.ValidationError(
+                {"email": "Invalid Email"},
+                code=SignInErrorCodeChoices.INCORRECT_EMAIL_PASSWORD.value,
+            )
 
         audit_log_data["user"] = user
+
+        if not user.password:
+            raise serializers.ValidationError(
+                {"non_field_error": "Invalid Sign In Method"},
+                code=SignInErrorCodeChoices.USER_MISSING_PASSWORD.value,
+            )
 
         if not check_password(attrs.get("password"), user.password):
             audit_log_data["type"] = UserSecurityAuditLogTypeChoices.SIGN_IN_FAIL.value
 
             UserSecurityAuditLog.objects.create(**audit_log_data)
-            raise serializers.ValidationError({"passowrd": "Invalid Password"})
+            raise serializers.ValidationError(
+                {"passowrd": "Invalid Password"},
+                code=SignInErrorCodeChoices.INCORRECT_EMAIL_PASSWORD.value,
+            )
+
+        if not user.email_verified:
+
+            raise serializers.ValidationError(
+                {"email": "Unverified email"},
+                code=SignInErrorCodeChoices.UNVERIFIED_EMAIL.value,
+            )
+
+        if user.disabled:
+
+            raise serializers.ValidationError(
+                {"non_field_error": "Disabled User"},
+                code=SignInErrorCodeChoices.ACCOUNT_DISABLED.value,
+            )
 
         user.last_signed_in = timezone.now()
         user.save()
@@ -144,7 +170,7 @@ class AccountWithUserModelSerializer(AccountModelSerializer):
         pass
 
 
-class SignInSocialModerSerializer(serializers.ModelSerializer):
+class SignInSocialModerSerializer(serializers.Serializer):
 
     provider = serializers.ChoiceField(choices=OAuthProviderChoices.choices)
     id_token = serializers.CharField()
@@ -199,6 +225,3 @@ class SignInSocialModerSerializer(serializers.ModelSerializer):
                     "refresh_token": str(refresh_token),
                 },
             }
-
-    class Meta(AccountWithUserModelSerializer.Meta):
-        pass

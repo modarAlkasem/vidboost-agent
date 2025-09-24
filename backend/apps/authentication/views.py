@@ -1,3 +1,7 @@
+# Django Imports
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
 # REST Framework Imports
 from rest_framework.request import Request
 from rest_framework.viewsets import ViewSet
@@ -11,6 +15,7 @@ from core.response import Response
 from .services import AuthService
 
 
+@method_decorator(csrf_exempt, "dispatch")
 class AuthViewSet(ViewSet):
     service = AuthService()
 

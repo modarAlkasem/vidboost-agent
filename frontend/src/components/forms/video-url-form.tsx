@@ -36,7 +36,6 @@ export const VideoUrlForm = () => {
   const onFormSubmit = async ({ url }: TVideoUrlFormSchema) => {
     await setTimeout(() => console.log("Video URL is being analyzed..."), 5000);
   };
-  console.log(isSubmitting);
 
   return (
     <div className="max-w-2xl mx-auto w-full">

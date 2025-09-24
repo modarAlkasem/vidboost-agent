@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge";
 import type { RequestInternal } from "next-auth";
 import { z } from "zod";
 
-const ZIpSchema = z.ipv4().optional() || z.ipv6().optional();
+const ZIpSchema = z.union([z.ipv4(), z.ipv6()]).optional();
 export const ZRequestMetadataSchema = z.object({
   ipAddress: ZIpSchema,
   userAgent: z.string(),

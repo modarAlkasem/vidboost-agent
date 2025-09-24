@@ -1,15 +1,18 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+
 import AgentPulse from "./agent-pulse";
 import { Button } from "./ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "./ui/dialog";
-
 import { AuthForm } from "./forms/auth-form";
 
 function Header() {
-  const signedIn = false;
+  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const { data: session } = useSession();
+  const user = session?.user;
 
   return (
     <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-200 ">
@@ -26,7 +29,7 @@ function Header() {
         </div>
         {/** Right Section */}
         <div className=" px-4 md:px-0 xl:px-4 h-16 flex items-center justify-between gap-x-4">
-          {signedIn ? (
+          {session ? (
             <>
               <Link href="/manage-plan">
                 <Button
@@ -45,7 +48,7 @@ function Header() {
               </Button>
             </>
           ) : (
-            <Dialog>
+            <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -67,7 +70,7 @@ function Header() {
                     Welcome! Please fill in the details to get started
                   </DialogDescription>
                 </DialogHeader> */}
-                <AuthForm />
+                <AuthForm setIsAuthDialogOpen={setIsAuthDialogOpen} />
               </DialogContent>
             </Dialog>
           )}

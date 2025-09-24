@@ -44,30 +44,37 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
         }
 
         const { email, password } = credentials;
-        const { ipAddress, userAgent } = extractNextAuthRequestMetadata(req);
-        const user = await signInFetcher({
-          email,
-          password,
-          ip_address: ipAddress,
-          user_agent: userAgent,
-        });
 
-        return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          email_verified: user.email_verified,
-          last_signed_in: user.last_signed_in as string,
-          disabled: user.disabled,
-          access_token: user.tokens.access_token,
-          refresh_token: user.tokens.refresh_token,
-          picture: user.picture,
-        } satisfies User;
+        const { ipAddress, userAgent } = extractNextAuthRequestMetadata(req);
+        try {
+          const result = await signInFetcher({
+            email,
+            password,
+            ip_address: ipAddress,
+            user_agent: userAgent,
+          });
+
+          return {
+            id: result.user.id,
+            name: result.user.name,
+            email: result.user.email,
+            email_verified: result.user.email_verified,
+            last_signed_in: result.user.last_signed_in as string,
+            disabled: result.user.disabled,
+            access_token: result.tokens.access_token,
+            refresh_token: result.tokens.refresh_token,
+            picture: result.user.picture,
+          } satisfies User;
+        } catch (err: any) {
+          throw new Error(err.status_text);
+        }
+        return null;
       },
     }),
   ],
   callbacks: {
     jwt({ token, user, account, trigger }) {
+      console.log(user);
       return {
         ...token,
         ...user,
@@ -75,6 +82,7 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
     },
 
     session({ session, token }) {
+      console.log(token);
       if (token && token.email) {
         return {
           ...session,

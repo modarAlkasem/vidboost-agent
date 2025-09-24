@@ -36,7 +36,7 @@ const buttonVariants = cva(
   }
 );
 
-const loaderVariants = cva("animate-spin mr-2", {
+const loaderVariants = cva("animate-spin mr-1", {
   variants: {
     size: {
       default: "w-5 h-5",

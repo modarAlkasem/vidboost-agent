@@ -10,7 +10,8 @@ export type SignInPayload = SignUpPayload & {
 
 export type SignUpResponse = APIUser;
 
-export type SignInResponse = APIUser & {
+export type SignInResponse = {
+  user: APIUser;
   tokens: {
     access_token: string;
     refresh_token: string;

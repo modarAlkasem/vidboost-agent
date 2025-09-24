@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 
 import {
   Form,
@@ -22,6 +23,7 @@ import { PasswordInput } from "../ui/password-input";
 import { Button } from "../ui/button";
 import { signUpFetcher } from "@/lib/api";
 import { AppErrorCode } from "@/lib/errors/app-error";
+import { ErrorCode, isErrorCode } from "@/lib/next-auth/error-codes";
 
 const ZSignUpSchema = z.object({
   email: z.string().email(),
@@ -67,19 +69,28 @@ const signUpErrorMessages: Record<string, string> = {
 };
 
 const signInErrorMessages: Record<string, string> = {
-  [AppErrorCode.EMAIL_ALREADY_EXISTS]:
-    "User with this email already exists. please use a different email address.",
-  [AppErrorCode.INVALID_REQUEST]:
-    "We are unable to sign you in. please review the information you provided then try again.",
-  [AppErrorCode.UNKNOWN_ERROR]:
-    "We are unable to sign you in. please try again later.",
+  [ErrorCode.CREDENTIALS_NOT_FOUND]:
+    "The email or password you provided is incorrect.",
+  [ErrorCode.INCORRECT_EMAIL_PASSWORD]:
+    "The email or password you provided is incorrect.",
+  [ErrorCode.UNVERIFIED_EMAIL]:
+    "The account has not been verified. please verify your account before signing in.",
+  [ErrorCode.ACCOUNT_DISABLED]: "The account has been disabled.",
+  [ErrorCode.USER_MISSING_PASSWORD]:
+    "This account appears to be using a social login method. please sign in using that method.",
+  [ErrorCode.INCORRECT_PASSWORD]:
+    "The email or password you provided is incorrect.",
 };
 
 const signInSocialErrorMessages: Record<string, string> = {
   [AppErrorCode.UNKNOWN_ERROR]: signInErrorMessages[AppErrorCode.UNKNOWN_ERROR],
 };
 
-export const AuthForm = () => {
+export const AuthForm = ({
+  setIsAuthDialogOpen,
+}: {
+  setIsAuthDialogOpen: (value: boolean) => any;
+}) => {
   const [formMode, setFormMode] = useState<"SIGN_IN" | "SIGN_UP">("SIGN_IN");
   const form = useForm<TSignInSchema>({
     values: {
@@ -96,7 +107,34 @@ export const AuthForm = () => {
   const isSubmitting = form.formState.isSubmitting;
 
   const onSignInFormSubmit = async ({ email, password }: TSignInSchema) => {
-    console.log("Sign In form is submitting...");
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        callbackUrl: "/",
+        redirect: false,
+      });
+
+      if (result?.error && isErrorCode(result.error)) {
+        const errorMessage = signInErrorMessages[result.error];
+
+        toast.error("Unable to sign in", {
+          description: errorMessage,
+          duration: 5000,
+          position: "top-right",
+        });
+        return;
+      }
+
+      setIsAuthDialogOpen(false);
+    } catch (err) {
+      toast.error("An unknown error occured", {
+        description:
+          "We encountered an error while trying to sign you in. please try again later.",
+        duration: 5000,
+        position: "top-right",
+      });
+    }
   };
 
   const onSignUpFormSubmit = async ({ email, password }: TSignInSchema) => {
@@ -110,7 +148,6 @@ export const AuthForm = () => {
       form.reset();
       setFormMode("SIGN_IN");
     } catch (error: any) {
-      console.log(error);
       const errorMessage =
         signUpErrorMessages[error.status_text] ??
         signUpErrorMessages[AppErrorCode.UNKNOWN_ERROR];
@@ -175,6 +212,7 @@ export const AuthForm = () => {
         <Button
           size="lg"
           className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300"
+          disabled={isSubmitting}
         >
           <FcGoogle className="!h-6 !w-6 mr-2" />
           Continue with Google
@@ -236,6 +274,8 @@ export const AuthForm = () => {
           size="lg"
           className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300"
           disabled={isSubmitting}
+          loading={isSubmitting}
+          loaderSize="lg"
         >
           {formMode === "SIGN_UP" ? "Sign Up" : "Sign In"}
         </Button>

@@ -5,13 +5,13 @@ import { extractNextAuthRequestMetadata } from "@/lib/utils";
 
 const auth = async (req: any, ctx: any) => {
   return await NextAuth(req, ctx, {
+    ...NEXT_AUTH_OPTIONS,
     pages: {
       signIn: "/",
       signOut: "/",
       error: "/",
       newUser: "/",
     },
-    ...NEXT_AUTH_OPTIONS,
   });
 };
 
