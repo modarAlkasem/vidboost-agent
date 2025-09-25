@@ -6,6 +6,7 @@ import {
   SignUpResponse,
   SignInSocialPayload,
   SignInSocialResponse,
+  SignOutPayload,
 } from "./types";
 
 export const signUpFetcher = async ({ email, password }: SignUpPayload) => {
@@ -50,4 +51,10 @@ export const signInSocialFetcher = async ({
     }
   );
   return response.data;
+};
+
+export const signOutFetcher = async ({ refresh_token }: SignOutPayload) => {
+  await api.post<null>("/auth/signout/", {
+    refresh_token,
+  });
 };

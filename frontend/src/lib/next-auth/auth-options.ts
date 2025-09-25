@@ -4,6 +4,7 @@ import type { AuthOptions, User, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { GoogleProfile } from "next-auth/providers/google";
+import { DateTime } from "luxon";
 
 import { signInFetcher, signInSocialFetcher } from "../api";
 import { ErrorCode } from "./error-codes";
@@ -17,6 +18,7 @@ import {
 } from "../constants/auth";
 import { extractNextAuthRequestMetadata } from "../utils";
 import { JWT } from "next-auth/jwt";
+import api from "../axios";
 
 export const NEXT_AUTH_OPTIONS: AuthOptions = {
   secret: AUTH_SECRET(),
@@ -95,7 +97,26 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
     }),
   ],
   callbacks: {
-    jwt({ token, user, account, trigger }) {
+    async jwt({ token, user, account, trigger }) {
+      if (user) {
+        token.accessToken = user.access_token;
+        token.refreshToken = user.refresh_token;
+        token.expires = DateTime.now().toUTC().plus({ minutes: 5 }).toISO();
+      }
+
+      if (
+        DateTime.fromISO(token.expires) >=
+        DateTime.now().toUTC().plus({ minutes: 5 })
+      ) {
+        const result = await api.post("/auth/token/refresh/", {
+          refresh: token.refreshToken,
+        });
+
+        token.accessToken = result.data.access_token;
+        token.refreshToken = result.data.refresh_token;
+        token.expires = DateTime.now().toUTC().toISO();
+      }
+
       return {
         ...token,
         ...user,
@@ -103,19 +124,17 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
     },
 
     session({ session, token }) {
-      if (token && token.email) {
-        return {
-          ...session,
-          user: {
-            id: token.id,
-            name: token.name,
-            email: token.email,
-            picture: token.picture,
-          },
-          accessToken: token.accessToken,
-        } satisfies Session;
-      }
-      return session;
+      return {
+        ...session,
+        user: {
+          id: token.id,
+          name: token.name,
+          email: token.email,
+          picture: token.picture,
+        },
+        accessToken: token.accessToken,
+        expires: token.expires,
+      } satisfies Session;
     },
   },
 

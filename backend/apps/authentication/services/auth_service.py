@@ -6,12 +6,16 @@ from rest_framework.serializers import ValidationError
 # Project Imports
 from core.response import Response
 
+# Third-Party Imports
+from rest_framework_simplejwt.tokens import RefreshToken
+
 # App Imports
 from ..serializers import (
     SignUpModelSerializer,
     UserModelSerializer,
     SignInSerializer,
     SignInSocialModerSerializer,
+    SignOutSerializer,
 )
 from ..constants import SignUpErrorCodeChoices, SignInErrorCodeChoices
 
@@ -77,3 +81,14 @@ class AuthService:
 
         if serializer.is_valid(raise_exception=True):
             return Response(data=serializer.validated_data)
+
+    def sign_out(self, request) -> Response:
+        data = request.data
+        serializer = SignOutSerializer(data=data)
+
+        serializer.is_valid(raise_exception=True)
+
+        refresh_token = RefreshToken(serializer.validated_data["refresh_token"])
+        refresh_token.blacklist()
+
+        return Response(data={})

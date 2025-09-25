@@ -26,3 +26,7 @@ export type SignInSocialPayload = {
 };
 
 export type SignInSocialResponse = SignInResponse;
+
+export type SignOutPayload = {
+  refresh_token: string;
+};
