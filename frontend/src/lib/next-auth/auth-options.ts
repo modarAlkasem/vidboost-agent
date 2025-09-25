@@ -101,12 +101,12 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
       if (user) {
         token.accessToken = user.access_token;
         token.refreshToken = user.refresh_token;
-        token.expires = DateTime.now().toUTC().toISO();
+        token.expires = DateTime.now().toUTC().plus({ minutes: 5 }).toISO();
       }
 
       if (
-        DateTime.fromISO(token.expires).plus({ minutes: 5 }) >=
-        DateTime.now().toUTC()
+        DateTime.fromISO(token.expires) >=
+        DateTime.now().toUTC().plus({ minutes: 5 })
       ) {
         const result = await api.post("/auth/token/refresh/", {
           refresh: token.refreshToken,
