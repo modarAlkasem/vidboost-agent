@@ -22,7 +22,7 @@ from .constants import (
     OAuthProviderChoices,
     SignInErrorCodeChoices,
 )
-from .utils import validate_google_id_token
+from .utils import validate_google_tokens
 
 
 class UserModelSerializer(serializers.ModelSerializer):
@@ -172,27 +172,23 @@ class AccountWithUserModelSerializer(AccountModelSerializer):
 
 class SignInSocialModerSerializer(serializers.Serializer):
 
+    email = serializers.CharField()
     provider = serializers.ChoiceField(choices=OAuthProviderChoices.choices)
     id_token = serializers.CharField()
-    ip_address = serializers.IPAddressField(required=False)
-    user_agent = serializers.CharField()
+    access_token = serializers.CharField()
 
     def validate(self, attrs: dict[str, Any]):
-        data = validate_google_id_token(attrs.get("id_token"))
-        audit_log_data = {
-            "ip_address": attrs.get("ip_address"),
-            "user_agent": attrs.get("user_agent"),
-        }
 
-        if not data:
-            audit_log_data["type"] = (
-                UserSecurityAuditLogTypeChoices.SIGN_IN_OAUTH_FAIL.value
-            )
-            UserSecurityAuditLog.objects.create(**audit_log_data)
+        user = User.objects.filter(email=attrs.get("email")).first()
+        data = validate_google_tokens(
+            id_token=attrs.get("id_token"), access_token=attrs.get("access_token")
+        )
+
+        if not data and user:
+
+            raise serializers.ValidationError({"id_token": "Invalid ID Token"})
 
         with atomic(durable=True):
-
-            user = User.objects.filter(email=data["user"].get("email")).first()
 
             if not user:
                 User.objects.create(**data.get("user"))
@@ -212,8 +208,10 @@ class SignInSocialModerSerializer(serializers.Serializer):
                 data["user"] = user
                 account = Account.objects.create(**data)
 
-            audit_log_data["type"] = UserSecurityAuditLogTypeChoices.SIGN_IN_OAUTH.value
-            UserSecurityAuditLog.objects.create(**audit_log_data)
+            else:
+                account.id_token = attrs["id_token"]
+                account.expires_at = data.get("expires_at")
+                account.save()
 
             refresh_token = RefreshToken.for_user(user)
             access_token = str(refresh_token.access_token)

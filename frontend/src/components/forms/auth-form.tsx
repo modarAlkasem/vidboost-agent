@@ -160,6 +160,23 @@ export const AuthForm = ({
     }
   };
 
+  const onAuthWithGoogleClick = async () => {
+    try {
+      await signIn("google", {
+        redirect: false,
+        callbackUrl: "/",
+      });
+    } catch (err) {
+      toast.error("An unknown error occured", {
+        description:
+          formMode === "SIGN_IN"
+            ? ErrorCode.UNKNOWN_ERROR
+            : AppErrorCode.UNKNOWN_ERROR,
+        duration: 5000,
+        position: "top-right",
+      });
+    }
+  };
   return (
     <Form {...form}>
       <form
@@ -210,9 +227,11 @@ export const AuthForm = ({
           )}
         </AnimatePresence>
         <Button
+          type="button"
           size="lg"
           className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300"
           disabled={isSubmitting}
+          onClick={onAuthWithGoogleClick}
         >
           <FcGoogle className="!h-6 !w-6 mr-2" />
           Continue with Google

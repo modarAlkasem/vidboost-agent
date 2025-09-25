@@ -3,12 +3,13 @@
 import type { AuthOptions, User, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import type { GoogleProfile } from "next-auth/providers/google";
 
-import { signInFetcher } from "../api";
+import { signInFetcher, signInSocialFetcher } from "../api";
 import { ErrorCode } from "./error-codes";
 
 import {
-  GOOGLE_CLINET_ID,
+  GOOGLE_CLIENT_ID,
   GOOGLE_CLIENT_SECRET,
   AUTH_SECRET,
   formatSecureCookieName,
@@ -23,11 +24,32 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
     strategy: "jwt",
   },
   providers: [
-    // GoogleProvider({
-    //   clientId: GOOGLE_CLINET_ID(),
-    //   clientSecret: GOOGLE_CLIENT_SECRET(),
-    //   async profile(profile) {},
-    // }),
+    GoogleProvider<GoogleProfile>({
+      clientId: GOOGLE_CLIENT_ID() ?? "",
+      clientSecret: GOOGLE_CLIENT_SECRET() ?? "",
+      async profile(profile, tokens) {
+        const data = {
+          email: profile.email,
+          id_token: tokens.id_token ?? "",
+          access_token: tokens.access_token ?? "",
+          provider: "google" as const,
+        };
+
+        const result = await signInSocialFetcher(data);
+
+        return {
+          id: result.user.id,
+          name: result.user.name,
+          email: result.user.email,
+          email_verified: result.user.email_verified,
+          last_signed_in: result.user.last_signed_in as string,
+          disabled: result.user.disabled,
+          access_token: result.tokens.access_token,
+          refresh_token: result.tokens.refresh_token,
+          picture: result.user.picture,
+        } satisfies User;
+      },
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -74,7 +96,6 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
   ],
   callbacks: {
     jwt({ token, user, account, trigger }) {
-      console.log(user);
       return {
         ...token,
         ...user,
@@ -82,7 +103,6 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
     },
 
     session({ session, token }) {
-      console.log(token);
       if (token && token.email) {
         return {
           ...session,

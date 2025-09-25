@@ -19,10 +19,10 @@ export type SignInResponse = {
 };
 
 export type SignInSocialPayload = {
+  access_token: string;
   id_token: string;
   provider: "google";
-  ip_address?: string;
-  user_agent: string;
+  email: string;
 };
 
 export type SignInSocialResponse = SignInResponse;
