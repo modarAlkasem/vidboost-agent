@@ -11,6 +11,7 @@ from rest_framework import serializers
 
 # Third-party Imports
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 
 # App Imports
 from .models import User, Account, UserSecurityAuditLog
@@ -223,3 +224,12 @@ class SignInSocialModerSerializer(serializers.Serializer):
                     "refresh_token": str(refresh_token),
                 },
             }
+
+
+class SignOutSerializer(serializers.Serializer):
+
+    refresh_token = serializers.SlugRelatedField(
+        slug_field="token",
+        queryset=OutstandingToken.objects.all(),
+        error_messages={"does_not_exist": "Invalid token"},
+    )
