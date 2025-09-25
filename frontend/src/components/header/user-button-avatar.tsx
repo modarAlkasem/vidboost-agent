@@ -18,7 +18,7 @@ const UserButtonAvatar = React.forwardRef<
               ?.split(" ")
               .map((text) => text[0].toUpperCase())
               .join("")
-          : [user.email[0], user.email[1]]
+          : [user?.email[0], user?.email[1]]
               .map((text) => text[0].toUpperCase())
               .join("")}
       </AvatarFallback>

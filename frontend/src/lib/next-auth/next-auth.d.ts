@@ -19,6 +19,7 @@ declare module "next-auth" {
       id: number | string;
     };
     accessToken: string;
+    expires: string;
   }
 }
 
@@ -31,5 +32,6 @@ declare module "next-auth/jwt" {
     lastSignedIn: string;
     accessToken: string;
     refreshToken: string;
+    expires: string;
   }
 }

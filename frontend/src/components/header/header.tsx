@@ -13,7 +13,6 @@ import UserButton from "./user-button";
 function Header() {
   const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
   const { data: session } = useSession();
-  const user = session?.user;
 
   return (
     <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-600">

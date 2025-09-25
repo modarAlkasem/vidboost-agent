@@ -20,6 +20,7 @@
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.15",
     "lucide-react": "^0.544.0",
+    "luxon": "^3.7.2",
     "next": "15.5.3",
     "next-auth": "^4.24.11",
     "next-runtime-env": "^3.3.0",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/luxon": "^3.7.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
