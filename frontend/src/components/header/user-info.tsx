@@ -10,7 +10,10 @@ const UserInfo = ({ user }: { user: SessionUser }) => {
         <UserButtonAvatar user={user} />
       </div>
       <div className="flex flex-col gap-y-1">
-        <span className="font-semibold text-white"> Mudar Alaksem</span>
+        {user.name && (
+          <span className="font-semibold text-white"> {user.name}</span>
+        )}
+
         <span className="text-sm text-gray-200">{user.email}</span>
       </div>
     </div>

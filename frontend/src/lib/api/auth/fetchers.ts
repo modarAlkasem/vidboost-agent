@@ -36,17 +36,17 @@ export const signInFetcher = async ({
 
 export const signInSocialFetcher = async ({
   id_token,
+  access_token,
   provider,
-  user_agent,
-  ip_address,
+  email,
 }: SignInSocialPayload) => {
-  const response = await api.post<ApiResponse<SignInSocialResponse>>(
+  const response = await api.post<SignInSocialResponse>(
     "/auth/social/signin/",
     {
+      email,
       id_token,
+      access_token,
       provider,
-      user_agent,
-      ip_address,
     }
   );
   return response.data;
