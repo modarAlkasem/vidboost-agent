@@ -11,18 +11,6 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use(
-  async (config) => {
-    const session = await getSession();
-    if (session) {
-      config.headers["Authorization"] = `Bearer ${session.accessToken}`;
-    }
-
-    return config;
-  },
-  (err) => Promise.reject(err)
-);
-
 api.interceptors.response.use(
   (response) => response.data,
   (error) => Promise.reject(error.response.data || error.message)
