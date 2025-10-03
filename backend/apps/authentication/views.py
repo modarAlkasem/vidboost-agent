@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.request import Request
 from rest_framework.viewsets import ViewSet
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 
 # Third-Party Imports
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -46,7 +47,8 @@ class AuthViewSet(ViewSet):
         detail=False,
         url_name="signout",
         url_path="signout",
-        permission_classes=[JWTAuthentication],
+        authentication_classes=[JWTAuthentication],
+        permission_classes=[IsAuthenticated],
     )
     def sign_out(self, request: Request) -> Response:
         return self.service.sign_out(request)
