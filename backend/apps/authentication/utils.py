@@ -33,7 +33,7 @@ def validate_google_tokens(id_token: str, access_token: str) -> Union[dict, None
                 "name": (
                     claims.get("name")
                     if claims.get("name")
-                    else f"{claims.get("given_name")} {claims.get("family_name")}"
+                    else f'{claims.get("given_name")} {claims.get("family_name")}'
                 ),
                 "email": claims.get("email"),
                 "email_verified": claims.get("email_verified"),

@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   # PostgreSQL Database
   db:
@@ -10,13 +8,17 @@ services:
 
     volumes:
       - ../data/postgres_data:/var/lib/postgresql/data
+
+    env_file:
+      - "../.env"
+
     environment:
       - POSTGRES_DB=${DB_NAME:-vidboost}
       - POSTGRES_USER=${DB_USER:-admin}
       - POSTGRES_PASSWORD=${DB_PASSWORD:-admin}
 
     healthcheck:
-      test: [CMD-SHELL", "pg_isready -U ${DB_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-admin}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -63,7 +65,10 @@ services:
 
   # Api:
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+
     container_name: vidboost_api
     ports:
       - "8000:8000"
@@ -85,7 +90,9 @@ services:
 
   # Celery Worker
   celery_worker:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: vidboost_celery_worker
     command: celery -A config worker -l info
     volumes:
@@ -102,7 +109,9 @@ services:
 
   # Celery Beat (Scheduled Tasks)
   celery_beat:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     container_name: vidboost_celery_beat
     command: celery -A config beat -l info
     volumes:
@@ -114,3 +123,5 @@ services:
       - db
       - redis
       - api
+
+    restart: unless-stopped

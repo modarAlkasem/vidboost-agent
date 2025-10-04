@@ -18,13 +18,13 @@ WORKDIR /app
 
 
 # Install Python dependencies
-COPY ../requirements.txt /app/
+COPY requirements.txt .
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
 
 # Copy project
-COPY ../ /app/
+COPY . .
 
 # Collect static files (for production)
 # RUN python manage.py collectstatic --noinput
