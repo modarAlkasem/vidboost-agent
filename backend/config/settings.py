@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # Apps
     "apps.authentication",
     "apps.core",
+    "apps.videos",
 ]
 
 MIDDLEWARE = [
