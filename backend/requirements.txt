@@ -6,6 +6,7 @@ django-cors-headers~=4.8.0
 python-decouple==3.8
 cryptography~=46.0.1
 python-jose~=3.5.0
+django-storages~=1.14.6
 
 
 # Database
@@ -32,6 +33,9 @@ google-genai~=1.41.0
 # YouTube Integration
 yt-dlp~=2025.9.26
 youtube-transcript-api~=1.2.2
+
+# AWS Integration
+boto3~=1.40.45
 
 # Utilities
 requests~=2.32.5
