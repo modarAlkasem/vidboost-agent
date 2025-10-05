@@ -138,11 +138,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR.as_posix(), "staticfiles")
-
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR.as_posix(), "media")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -210,3 +205,39 @@ GOOGLE_API_KEY = config("GOOGLE_API_KEY")
 
 # YouTube API Key
 YOUTUBE_API_KEY = config("YOUTUBE_API_KEY")
+
+
+# Uploaded-file Storage
+STORAGE_BACKEND = config("STORAGE_BACKEND", default="filesystem")
+
+if STORAGE_BACKEND == "S3":
+    # AWS S3 Configurations
+
+    AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default="us-east-1")
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = "public-read"
+    AWS_S3_ENCRYPTION = True
+    AWS_QUERYSTRING_AUTH = False
+
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+else:
+    MEDIA_ROOT = os.path.join(BASE_DIR.as_posix(), "media")
+    STATIC_ROOT = os.path.join(BASE_DIR.as_posix(), "staticfiles")
+
+
+STATIC_URL = (
+    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonawas.com/static-files/"
+    if STORAGE_BACKEND == "S3"
+    else "static/"
+)
+
+MEDIA_URL = (
+    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonawas.com/media/"
+    if STORAGE_BACKEND == "S3"
+    else "static/"
+)
