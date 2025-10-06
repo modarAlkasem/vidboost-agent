@@ -25,6 +25,7 @@ class YouTubeService:
             'title':str,
             'description': str,
             'thumbnail':str,
+            thumbnail_high_res:str,
             'duration': int (seconds),
             'view_count': int,
             'like_count': int,
@@ -50,6 +51,9 @@ class YouTubeService:
                     "title": info.get("title"),
                     "description": info.get("description", ""),
                     "thumbnail": info.get("thumbnail"),
+                    "thumbnail_high_res": info.get("thumbnails", [{}])[-1].get(
+                        "url", ""
+                    ),
                     "duration": info.get("duration"),
                     "view_count": info.get("view_count", "Not Available"),
                     "like_count": info.get("like_count", "Not Available"),
@@ -58,7 +62,7 @@ class YouTubeService:
                     "channel": {
                         "id": info.get("channel_id", ""),
                         "name": info.get("channel", ""),
-                        "thumbnail": info.get("channel_thumbnail_url", None),
+                        "thumbnail": info.get("channel_thumbnail_url", ""),
                         "subscriber_count": info.get("channel_follower_count", 0),
                     },
                 }
@@ -67,7 +71,7 @@ class YouTubeService:
             raise Exception(f"Failed tp fetch video Info for {video_id}")
 
     @staticmethod
-    def fetch_transcript(video_id: str, languages: List[str] = None) -> Optional[str]:
+    def fetch_transcript(video_id: str, languages: List[str] = None) -> Optional[dict]:
         """
         Fetch video transcript
 
