@@ -5,6 +5,9 @@ from typing import Optional
 # REST Framework Imports
 from rest_framework import serializers
 
+# App Imports
+from .models import Video
+
 
 class CreateVideoSerializer(serializers.Serializer):
     """
@@ -32,11 +35,21 @@ class CreateVideoSerializer(serializers.Serializer):
 
             return None
 
-    def validate_url(self, value: str) -> str:
+    def validate(self, attrs: dict) -> str:
 
-        video_id = self._extract_video_id(value)
+        video_id = self._extract_video_id(attrs.get("url"))
 
         if not video_id:
             raise serializers.ValidationError(
                 "Invalid YouTube URL. Please provide a valid YouTube video link."
             )
+
+        attrs["video_id"] = video_id
+        return attrs
+
+
+class VideoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Video
+        fields = "__all__"
+        read_only_fields = ["id", "created_at", "updated_at"]
