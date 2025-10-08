@@ -20,7 +20,9 @@ logger = logging.getLogger(__name__)
 
 @shared_task(bind=True, max_retries=3)
 def fetch_video_info_task(
-    self, video_id: int, fetch_transcript: bool = True, room_name: str = None
+    self,
+    video_id: int,
+    fetch_transcript: bool = True,
 ):
     """
     Async task for fetching specific Youtube video's info
@@ -30,20 +32,24 @@ def fetch_video_info_task(
         fetch_transcript: Whether to fetch transcript (default: True)
         room_name: Optional WebSocket room name for real-time updates
     """
+    _send_websocket_task_update(task_id, "Starting video data fetch...", "STARTED")
+
+    task_id = self.request.id
     try:
+
         video = Video.objects.get(id=video_id)
         provider_video_id = video.provider_video_id
 
-        if room_name:
-
-            _send_websocket_update(
-                room_name, "Fetching video information...", "processing"
-            )
-
+        _send_websocket_task_update(
+            task_id, "Fetching video information...", "PROCCESSING"
+        )
         video_info = YouTubeService.fetch_video_info(provider_video_id)
         video_transcript = None
 
         if fetch_transcript:
+            _send_websocket_task_update(
+                task_id, "Fetching video transcript...", "PROCCESSING"
+            )
             try:
                 fetch_transcript = Transcript.objects.get(video=video).transcript
 
@@ -55,37 +61,44 @@ def fetch_video_info_task(
 
         result = {"video_info": video_info, "video_transcript": video_transcript}
 
-        if room_name:
-            _send_websocket_update(
-                room_name, "Video data fetched successfully", "complete", result
-            )
+        _send_websocket_task_update(
+            task_id, "Video data fetched successfully", "COMPLETE", result
+        )
 
         logger.info(f"Successfully fetched data for video {provider_video_id}")
 
         return result
 
     except Video.DoesNotExist as e:
+        _send_websocket_task_update(
+            task_id, f"Video with id {video_id} does not exist", "FAILURE"
+        )
         logger.error(f"Video with id {video_id} does not exist")
         raise e
 
     except Exception as e:
         logger.error(f"Error in fetch_video_info_task: {str(e)}")
 
-        if room_name:
-            _send_websocket_update(room_name, f"Error: {str(e)}", "error")
+        _send_websocket_task_update(task_id, "Retry fetching video info", "RETRY")
 
         raise self.retry(exc=0, countdown=60)
 
 
-def _send_websocket_update(
-    room_name: str, message: str, status: str, data: dict = None
+def _send_websocket_task_update(
+    task_id: str, message: str, status: str, data: dict = None
 ):
     """
-    Helper function to send WebSocket updates
+    Send task updates to Websocket connected to this task
+
+    Args:
+        task_id: Celery task ID
+        message: Status message
+        status: Status string (processing, success, error)
+        data: Optional result data
     """
     channel_layer = get_channel_layer()
 
     async_to_sync(channel_layer.group_send)(
-        f"video_{room_name}",
-        {"type": "video_update", "message": message, "status": status, "data": data},
+        f"task_{task_id}",
+        {"type": "task_update", "message": message, "status": status, "data": data},
     )
