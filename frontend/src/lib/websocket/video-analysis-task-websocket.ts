@@ -4,7 +4,7 @@ interface VideoAnalysisTaskStatusCallback {
   (data: any): void;
 }
 
-interface VideoAnalysisTaskData {
+export interface VideoAnalysisTaskData {
   type: string;
   message: string;
   status: "STARTED" | "PROCESSING" | "COMPLETED" | "RETRY" | "FAILURE";
