@@ -15,7 +15,7 @@ type JsonRecord<T> = {
 
 type Json<T = any> = JsonPrimitive | JsonArray | JsonRecord<T>;
 
-interface ApiResponse<T> {
+interface ApiResponse<T = any> {
   data: T;
   status_code: number;
   status_text: string;
