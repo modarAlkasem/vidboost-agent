@@ -92,12 +92,16 @@ class YouTubeService:
             languages = ["en"]
 
         try:
-            transcript_list = YouTubeTranscriptApi.list(video_id)
+
+            youtube_transcript_api = YouTubeTranscriptApi()
+            transcript_list = youtube_transcript_api.list(video_id)
 
             try:
+
                 transcript = transcript_list.find_manually_created_transcript(languages)
                 is_auto_generated = False
             except:
+
                 transcript = transcript_list.find_generated_transcript(languages)
                 is_auto_generated = True
 
@@ -105,9 +109,9 @@ class YouTubeService:
 
             transformed_transcript = []
             for item in raw_transcript:
-                timestamp = YouTubeService._seconds_to_timestamp(item["start"])
+                timestamp = YouTubeService._seconds_to_timestamp(item.start)
                 transformed_transcript.append(
-                    {"text": item["text"], "timestamp": timestamp}
+                    {"text": item.text, "timestamp": timestamp}
                 )
 
             return {

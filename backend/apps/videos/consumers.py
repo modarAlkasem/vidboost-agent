@@ -116,8 +116,8 @@ class VideoWebsocketConsumer(WebsocketConsumer):
                 {
                     "type": "task_update",
                     "task_id": self.task_id,
-                    "message": f"{event["message"]}",
-                    "status": f"{event["status"]}",
+                    "message": f'{event.get("message")}',
+                    "status": f'{event.get("status")}',
                     "data": event.get("data"),
                 }
             )

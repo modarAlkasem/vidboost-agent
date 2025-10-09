@@ -37,11 +37,13 @@ class VideoService:
 
         video_id = serializer.validated_data["video_id"]
 
-        video, is_new, message = VideoService.get_or_create_video(video_id)
+        video, is_new, message = VideoService.get_or_create_video(
+            video_id, request.user
+        )
 
         response = {
             "data": VideoSerializer(instance=video).data,
-            "status": status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
+            "status_code": status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
             "status_text": "CREATED" if is_new else "SUCCESS",
         }
         return Response(**response)
@@ -61,13 +63,16 @@ class VideoService:
 
         video = Video.objects.filter(provider_video_id=video_id, user=user).first()
 
-        result = (
-            video,
-            False,
-            "Video already exists" if video else video,
-            True,
-            "Video created successfully. Data is being fetched.",
-        )
+        if not video:
+            video = Video.objects.create(provider_video_id=video_id, user=user)
+
+            result = (
+                video,
+                True,
+                "Video created successfully. Data is being fetched.",
+            )
+        else:
+            result = (video, False, "Video already exists. Data is being fetched.")
 
         fetch_video_info_task.delay(video.id)
 
