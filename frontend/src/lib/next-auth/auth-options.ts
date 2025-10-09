@@ -98,16 +98,26 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user, account, trigger }) {
+      let resultToken = { ...token };
       if (user) {
-        token.accessToken = user.access_token;
-        token.refreshToken = user.refresh_token;
-        token.expires = DateTime.now().toUTC().plus({ minutes: 5 }).toISO();
+        resultToken = {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          emailVerified: user.email_verified,
+          lastSignedIn: user.last_signed_in,
+
+          accessToken: user.access_token,
+          refreshToken: user.refresh_token,
+          expires: DateTime.now().toUTC().plus({ minutes: 5 }).toISO(),
+        } satisfies JWT;
       }
 
       if (
         DateTime.fromISO(token.expires) >=
         DateTime.now().toUTC().plus({ minutes: 5 })
       ) {
+        console.log("heeeeeeeeey");
         const result = await api.post("/auth/token/refresh/", {
           refresh: token.refreshToken,
         });
@@ -117,10 +127,7 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
         token.expires = DateTime.now().toUTC().toISO();
       }
 
-      return {
-        ...token,
-        ...user,
-      } satisfies JWT;
+      return resultToken satisfies JWT;
     },
 
     session({ session, token }) {
@@ -133,6 +140,7 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
           picture: token.picture,
         },
         accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
         expires: token.expires,
       } satisfies Session;
     },

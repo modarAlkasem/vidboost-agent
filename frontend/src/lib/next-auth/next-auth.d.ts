@@ -19,6 +19,7 @@ declare module "next-auth" {
       id: number | string;
     };
     accessToken: string;
+    refreshToken: string;
     expires: string;
   }
 }

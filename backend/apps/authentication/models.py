@@ -27,7 +27,7 @@ class User(TimeStampMixin):
     REQUIRED_FIELDS = ()
     USERNAME_FIELD = "email"
     is_anonymous = False
-    is_authenticated = False
+    is_authenticated = True
     is_active = True
 
 

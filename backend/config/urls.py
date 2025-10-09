@@ -20,5 +20,5 @@ from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
     path("api/auth/", include("authentication.urls")),
-    path("api/videos/", include("video.urls")),
+    path("api/videos/", include("videos.urls")),
 ]

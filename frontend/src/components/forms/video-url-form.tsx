@@ -1,21 +1,23 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AnimatePresence, motion } from "framer-motion";
-import { FcGoogle } from "react-icons/fc";
+import { useMutation } from "@tanstack/react-query";
 
 import {
   Form,
   FormField,
   FormItem,
-  FormLabel,
   FormControl,
   FormMessage,
 } from "../ui/form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
+import { createVideo } from "@/lib/api/video/fetchers";
+import { toast } from "sonner";
 
 const ZVideoUrlFormSchema = z.object({
   url: z.string().url().min(2).max(1000),
@@ -31,10 +33,27 @@ export const VideoUrlForm = () => {
     },
   });
 
-  const isSubmitting = form.formState.isSubmitting;
+  const router = useRouter();
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["videos", "create"],
+    mutationFn: createVideo,
+    onSuccess: (data, variables, onMutateResult, context) => {
+      console.log("📹 Created video data:", data);
+      router.push(`/videos/${data.provider_video_id}/analysis/`);
+    },
+    onError: (error, variables, onMutateResult, context) => {
+      console.log("⚠️ Error analyzing video:", error);
+      toast.error("An error ocurred", {
+        position: "bottom-right",
+        description:
+          "Something went wrong while trying to analyze your video, please try again later.",
+        duration: 5000,
+      });
+    },
+  });
 
-  const onFormSubmit = async ({ url }: TVideoUrlFormSchema) => {
-    await setTimeout(() => console.log("Video URL is being analyzed..."), 5000);
+  const onFormSubmit = ({ url }: TVideoUrlFormSchema) => {
+    mutate({ url });
   };
 
   return (
@@ -68,10 +87,10 @@ export const VideoUrlForm = () => {
 
           <Button
             className="py-2  bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300 "
-            disabled={isSubmitting}
-            loading={isSubmitting}
+            disabled={isPending}
+            loading={isPending}
           >
-            {isSubmitting ? "Analyzing..." : "Analyze"}
+            {isPending ? "Analyzing..." : "Analyze"}
           </Button>
         </form>
       </Form>

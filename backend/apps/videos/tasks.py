@@ -32,23 +32,23 @@ def fetch_video_info_task(
         fetch_transcript: Whether to fetch transcript (default: True)
         room_name: Optional WebSocket room name for real-time updates
     """
+    task_id = self.request.id
     _send_websocket_task_update(task_id, "Starting video data fetch...", "STARTED")
 
-    task_id = self.request.id
     try:
 
         video = Video.objects.get(id=video_id)
         provider_video_id = video.provider_video_id
 
         _send_websocket_task_update(
-            task_id, "Fetching video information...", "PROCCESSING"
+            task_id, "Fetching video information...", "PROCESSING"
         )
         video_info = YouTubeService.fetch_video_info(provider_video_id)
         video_transcript = None
 
         if fetch_transcript:
             _send_websocket_task_update(
-                task_id, "Fetching video transcript...", "PROCCESSING"
+                task_id, "Fetching video transcript...", "PROCESSING"
             )
             try:
                 fetch_transcript = Transcript.objects.get(video=video).transcript
@@ -58,11 +58,12 @@ def fetch_video_info_task(
                 video_transcript = YouTubeService.fetch_transcript(
                     provider_video_id, ["en"]
                 )["transcript"]
+                Transcript.objects.create(video=video, transcript=video_transcript)
 
         result = {"video_info": video_info, "video_transcript": video_transcript}
 
         _send_websocket_task_update(
-            task_id, "Video data fetched successfully", "COMPLETE", result
+            task_id, "Video data fetched successfully", "COMPLETED", result
         )
 
         logger.info(f"Successfully fetched data for video {provider_video_id}")

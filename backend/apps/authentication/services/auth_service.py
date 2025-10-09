@@ -84,7 +84,7 @@ class AuthService:
 
     def sign_out(self, request: Request) -> Response:
         data = request.data
-        print(request.data)
+
         serializer = SignOutSerializer(data=data)
 
         serializer.is_valid(raise_exception=True)
