@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useVideoAnalysisTask } from "@/lib/websocket/hooks/use-video-analysis-task";
 import { Usage } from "@/components/usage";
 import { YoutubeVideoDetails } from "@/components/youtube-video-details";
+import { ThumbnailGeneration } from "@/components/thumbnail-generation";
 
 const VideoAnalysisPage = () => {
   const params = useParams();
@@ -53,6 +54,10 @@ const VideoAnalysisPage = () => {
 
           {/** Youtube video Details Section */}
           <YoutubeVideoDetails videoId={videoId} />
+          {/** Thumbnail Generation Section */}
+          <ThumbnailGeneration videoId={videoId} />
+          {/** Title Section */}
+          <TitleGeneration videoId={videoId} />
         </div>
       </div>
     </div>
