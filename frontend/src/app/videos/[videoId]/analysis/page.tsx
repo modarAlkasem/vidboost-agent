@@ -7,6 +7,7 @@ import { useVideoAnalysisTask } from "@/lib/websocket/hooks/use-video-analysis-t
 import { Usage } from "@/components/usage";
 import { YoutubeVideoDetails } from "@/components/youtube-video-details";
 import { ThumbnailGeneration } from "@/components/thumbnail-generation";
+import { TitleGeneration } from "@/components/title-generation";
 
 const VideoAnalysisPage = () => {
   const params = useParams();
