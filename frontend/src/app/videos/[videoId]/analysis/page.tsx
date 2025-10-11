@@ -8,6 +8,7 @@ import { Usage } from "@/components/usage";
 import { YoutubeVideoDetails } from "@/components/youtube-video-details";
 import { ThumbnailGeneration } from "@/components/thumbnail-generation";
 import { TitleGeneration } from "@/components/title-generation";
+import { Transcription } from "@/components/transcription";
 
 const VideoAnalysisPage = () => {
   const params = useParams();
@@ -59,7 +60,11 @@ const VideoAnalysisPage = () => {
           <ThumbnailGeneration videoId={videoId} />
           {/** Title Section */}
           <TitleGeneration videoId={videoId} />
+          {/**  Transcription Section */}
+          <Transcription videoId={videoId} />
         </div>
+
+        {/** Right Side */}
       </div>
     </div>
   );
