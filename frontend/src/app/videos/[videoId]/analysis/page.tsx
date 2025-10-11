@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { useVideoAnalysisTask } from "@/lib/websocket/hooks/use-video-analysis-task";
 import { Usage } from "@/components/usage";
+import { YoutubeVideoDetails } from "@/components/youtube-video-details";
 
 const VideoAnalysisPage = () => {
   const params = useParams();
@@ -14,12 +15,12 @@ const VideoAnalysisPage = () => {
   const videoTranscriptionStatus =
     video == undefined ? (
       <div className="inline-flex items-center gap-2 px-3 py-1.5 border-r bg-[#3e3e68] border-blue-600 rounded-full ">
-        <div className="w-2 h-2 bg-[#5a5a8c] rounded-full mr-2" />
+        <div className="w-2 h-2 bg-[#5a5a8c] rounded-full mr-2 animate-pulse" />
         <span className="text-sm text-gray-400"> Loading...</span>
       </div>
     ) : !video ? (
       <div className="inline-flex items-center gap-2 px-3 py-1.5 border-r bg-amber-50 border-amber-200 rounded-full ">
-        <div className="w-2 h-2 bg-amber-400 rounded-full mr-2" />
+        <div className="w-2 h-2 bg-amber-400 rounded-full mr-2 animate-pulse" />
         <p className="text-sm text-amber-700">
           This is your first time analyzing this video.
           <span className="font-semibold">
@@ -29,7 +30,7 @@ const VideoAnalysisPage = () => {
       </div>
     ) : (
       <div className="inline-flex items-center gap-2 px-3 py-1.5 border-r bg-green-50 border-green-200 rounded-full ">
-        <div className="w-2 h-2 bg-green-400 rounded-full mr-2" />
+        <div className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse" />
         <p className="text-sm text-green-700">
           Analysis exists for this video - no additional tokens needed in future
           calls.
@@ -51,6 +52,7 @@ const VideoAnalysisPage = () => {
           </div>
 
           {/** Youtube video Details Section */}
+          <YoutubeVideoDetails videoId={videoId} />
         </div>
       </div>
     </div>
