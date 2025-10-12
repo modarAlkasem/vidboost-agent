@@ -1,14 +1,38 @@
 import { NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL } from "../constants/app";
+import { getSession } from "next-auth/react";
 
 interface VideoAnalysisTaskStatusCallback {
-  (data: any): void;
+  (data: VideoAnalysisTaskEventPayload): void;
 }
 
 export interface VideoAnalysisTaskData {
+  video_info: {
+    title: string;
+    description: string;
+    thumbnail: string;
+    thumbnail_high_res: string;
+    duration: number; // seconds
+    view_count: number;
+    like_count: number;
+    comment_count: number;
+    published_at: string; // ISO format
+    channel: {
+      id: string;
+      name: string;
+      subscriber_count: number;
+      thumbnail: string;
+    };
+  };
+  video_transcript: {
+    text: string;
+    timestamp: string;
+  }[];
+}
+export interface VideoAnalysisTaskEventPayload {
   type: string;
   message: string;
   status: "STARTED" | "PROCESSING" | "COMPLETED" | "RETRY" | "FAILURE";
-  data?: any;
+  data?: VideoAnalysisTaskData;
   error?: any;
 }
 
@@ -25,12 +49,12 @@ export class VideoAnalysisTaskWebSocket {
   }
 
   connect = (): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const wsUrl = `${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL}/videos/${this.taskId}/`;
-
-      console.log(
-        "Connecting to WebSocket: ${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL}"
-      );
+    return new Promise(async (resolve, reject) => {
+      const session = await getSession();
+      const token = session?.accessToken;
+      const wsUrl = `${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL()}/video/tasks/${
+        this.taskId
+      }/?token=${token}`;
 
       this.ws = new WebSocket(wsUrl);
 
@@ -43,7 +67,7 @@ export class VideoAnalysisTaskWebSocket {
 
       this.ws.onmessage = (event) => {
         try {
-          const data: VideoAnalysisTaskData = JSON.parse(event.data);
+          const data: VideoAnalysisTaskEventPayload = JSON.parse(event.data);
           console.log("📩 Received WebSocket message:", data);
 
           this.callbacks.forEach((callback) => callback(data));

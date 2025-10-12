@@ -4,10 +4,10 @@ import Image from "next/image";
 
 import { Usage } from "./usage";
 export const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
-  const images = Array(2).fill(null);
+  const images = [];
 
   return (
-    <div className="rounded-xl flex flex-col p-4 border">
+    <div className="rounded-xl flex flex-col p-4 border border-blue-600">
       <div className="min-w-52">
         <Usage title="Thumbnail Generation" />
       </div>

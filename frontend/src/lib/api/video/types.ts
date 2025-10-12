@@ -6,6 +6,8 @@ export type CreateVideoResponse = {
   id: string;
   user: string;
   provider_video_id: string;
+  task_id: string;
+  is_new: boolean;
   created_at: string;
   updated_at: string;
 };

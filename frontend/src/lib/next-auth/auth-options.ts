@@ -117,7 +117,6 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
         DateTime.fromISO(token.expires) >=
         DateTime.now().toUTC().plus({ minutes: 5 })
       ) {
-        console.log("heeeeeeeeey");
         const result = await api.post("/auth/token/refresh/", {
           refresh: token.refreshToken,
         });

@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 
 import {
   VideoAnalysisTaskWebSocket,
-  type VideoAnalysisTaskData,
+  type VideoAnalysisTaskEventPayload,
 } from "../video-analysis-task-websocket";
 
 export const useVideoAnalysisTask = (taskId: string | null) => {
-  const [taskStatus, setTaskStatus] = useState<VideoAnalysisTaskData | null>(
-    null
-  );
+  const [taskStatus, setTaskStatus] =
+    useState<VideoAnalysisTaskEventPayload | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
@@ -21,7 +20,7 @@ export const useVideoAnalysisTask = (taskId: string | null) => {
         type: data.type,
         status: data.status,
         message: data.message,
-        data: data?.message,
+        data: data?.data,
         error: data?.error,
       });
     });
