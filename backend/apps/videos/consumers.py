@@ -3,7 +3,7 @@ import json
 import logging
 
 # Third Party Imports
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from celery.result import AsyncResult
 
@@ -11,7 +11,7 @@ from celery.result import AsyncResult
 logger = logging.Logger(__name__)
 
 
-class VideoWebsocketConsumer(WebsocketConsumer):
+class VideoWebsocketConsumer(AsyncWebsocketConsumer):
     """Websocket consumer for real-time Fetch Video Info Celery task updates"""
 
     async def connect(self):
@@ -36,8 +36,6 @@ class VideoWebsocketConsumer(WebsocketConsumer):
                 }
             )
         )
-
-        await self.send_task_status()
 
     async def disconnect(self, close_code):
         """Handles Websocket disconnection"""
