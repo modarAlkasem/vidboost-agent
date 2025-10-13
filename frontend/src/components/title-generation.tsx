@@ -13,9 +13,6 @@ export const TitleGeneration = ({ videoId }: { videoId: string }) => {
     enabled: !!videoId,
   });
   const isTitleGenerationEnabled = true;
-  console.log("=====================");
-  console.log(data);
-  console.log("=====================");
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
