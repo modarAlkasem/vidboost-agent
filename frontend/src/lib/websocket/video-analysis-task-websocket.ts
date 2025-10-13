@@ -38,22 +38,22 @@ export interface VideoAnalysisTaskEventPayload {
 
 export class VideoAnalysisTaskWebSocket {
   private ws: WebSocket | null = null;
-  private taskId: string;
+  private videoId: string;
   private callbacks: VideoAnalysisTaskStatusCallback[] = [];
   private reconnectAttempts: number = 0;
   private maxReconnectAttempts: number = 5;
   private reconnectDelay: number = 2000;
 
-  constructor(taskId) {
-    this.taskId = taskId;
+  constructor(videoId) {
+    this.videoId = videoId;
   }
 
   connect = (): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       const session = await getSession();
       const token = session?.accessToken;
-      const wsUrl = `${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL()}/video/tasks/${
-        this.taskId
+      const wsUrl = `${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL()}/videos/${
+        this.videoId
       }/?token=${token}`;
 
       this.ws = new WebSocket(wsUrl);
@@ -87,7 +87,7 @@ export class VideoAnalysisTaskWebSocket {
 
       this.ws.onclose = (event) => {
         console.log(
-          `🔌 WebSocket connection closed for task ${this.taskId}. Code: ${event.code}`
+          `🔌 WebSocket connection closed for task ${this.videoId}. Code: ${event.code}`
         );
 
         if (

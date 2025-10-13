@@ -63,7 +63,7 @@ class JWTAuthMiddleware(BaseMiddleware):
             return await super().__call__(scope, receive, send)
 
         except Exception as e:
-            print(e)
+
             await send({"type": "websocket.close", "code": 4001, "reason": str(e)})
 
             return

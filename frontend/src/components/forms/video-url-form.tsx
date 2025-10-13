@@ -39,9 +39,7 @@ export const VideoUrlForm = () => {
     mutationFn: createVideo,
     onSuccess: (data, variables, onMutateResult, context) => {
       console.log("📹 Created video data:", data);
-      router.push(
-        `/videos/${data.provider_video_id}/analysis?taskId=${data.task_id}&isNew=${data.is_new}`
-      );
+      router.push(`/videos/${data.id}/analysis?isNew=${data.is_new}`);
     },
     onError: (error, variables, onMutateResult, context) => {
       console.log("⚠️ Error analyzing video:", error);

@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 @shared_task(bind=True, max_retries=3)
 def fetch_video_info_task(
     self,
-    video_id: int,
+    video_id: str,
     fetch_transcript: bool = True,
 ):
     """
@@ -51,7 +51,7 @@ def fetch_video_info_task(
                 task_id, "Fetching video transcript...", "PROCESSING"
             )
             try:
-                fetch_transcript = Transcript.objects.get(video=video).transcript
+                video_transcript = Transcript.objects.get(video=video).transcript
 
             except Transcript.DoesNotExist:
 

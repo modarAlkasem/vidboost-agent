@@ -35,7 +35,7 @@ export const Transcription = ({
                 <span className="text-sm text-gray-400 min-w-[50px]">
                   {entry.timestamp}
                 </span>
-                <p className="text-sm text-gray-700">{entry.text}</p>
+                <p className="text-sm text-white">{entry.text}</p>
               </div>
             ))
           ) : (
