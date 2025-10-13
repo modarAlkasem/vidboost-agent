@@ -4,9 +4,10 @@ from typing import Optional
 
 # REST Framework Imports
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 # App Imports
-from .models import Video
+from .models import Video, Title
 
 
 class CreateVideoSerializer(serializers.Serializer):
@@ -53,3 +54,10 @@ class VideoSerializer(serializers.ModelSerializer):
         model = Video
         fields = "__all__"
         read_only_fields = ["id", "created_at", "updated_at"]
+
+
+class TitleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Title
+        fields = "__all__"
