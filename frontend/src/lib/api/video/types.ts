@@ -44,3 +44,15 @@ export type GetVideoTitlesPayload = {
 };
 
 export type GetVideoTitlesResponse = VideoTitle[];
+
+export type VideoImage = {
+  id: number;
+  url: string | null;
+  video: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GetVideoImagesPayload = GetVideoTitlesPayload;
+
+export type GetVideoImagesResponse = VideoImage[];
