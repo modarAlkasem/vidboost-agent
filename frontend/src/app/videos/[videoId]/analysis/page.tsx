@@ -19,35 +19,10 @@ const VideoAnalysisPage = () => {
   const videoId = params.videoId as string;
 
   const searchParams = useSearchParams();
-  const taskId = searchParams.get("taskId") as string;
 
-  const newVideoAnalysis = searchParams.get("isNew") as string;
+  const newVideoAnalysis = Boolean(searchParams.get("isNew") as string);
 
-  // const [videoStatus, setVideoStatus] = useState<VideoAnalysisTaskData | null>(
-  //   null
-  // );
-
-  // const [videoAnalysisTaskUnsubscriber, setVideoAnalysisTaskUnsubscriber] =
-  //   useState<(() => void) | null>(null);
-
-  // useEffect(() => {
-  //   const connectVideoAnalysisWebSocket = async () => {
-  //     if (taskId && videoStatus === null) {
-  //       const handleVideoStatusUpdate = (data: VideoAnalysisTaskData) => {
-  //         setVideoStatus(data);
-  //       };
-
-  //       const ws = new VideoAnalysisTaskWebSocket(taskId);
-  //       setVideoAnalysisTaskUnsubscriber(
-  //         ws.onStatusUpdate(handleVideoStatusUpdate)
-  //       );
-
-  //       await ws.connect();
-  //     }
-  //   };
-  // }, [videoStatus]);
-
-  const videoStatus = useVideoAnalysisTask(taskId).taskStatus;
+  const videoStatus = useVideoAnalysisTask(videoId).taskStatus;
 
   const videoIsLoading =
     videoStatus?.status == "STARTED" || videoStatus?.status == "PROCESSING";

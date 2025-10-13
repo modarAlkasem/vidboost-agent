@@ -5,5 +5,5 @@ from django.urls import re_path
 from .consumers import VideoWebsocketConsumer
 
 websocket_urlpatterns = [
-    re_path(r"^ws/video/tasks/(?P<task_id>[\w-]+)/$", VideoWebsocketConsumer.as_asgi())
+    re_path(r"^ws/videos/(?P<video_id>[\w-]+)/$", VideoWebsocketConsumer.as_asgi())
 ]

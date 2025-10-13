@@ -17,7 +17,6 @@ from authentication.models import User
 from core.response import Response
 
 # App Imports
-from ..tasks import fetch_video_info_task
 from ..serializer import CreateVideoSerializer, VideoSerializer
 from videos.models import Video
 
@@ -48,21 +47,18 @@ class VideoService:
 
             video_id = serializer.validated_data["video_id"]
 
-            video, is_new, task_id = VideoService.get_or_create_video(
-                video_id, request.user
-            )
+            video, is_new = VideoService.get_or_create_video(video_id, request.user)
             logger.info(
                 "Video created Successfully",
                 extra={
                     "user_id": request.user.id,
                     "video_id": video.id,
                     "is_new": is_new,
-                    "task_id": task_id,
+                    "video_id": video.id,
                 },
             )
             response = {
-                "data": VideoSerializer(instance=video).data
-                | {"task_id": task_id, "is_new": is_new},
+                "data": VideoSerializer(instance=video).data | {"is_new": is_new},
                 "status_code": (
                     status.HTTP_201_CREATED if is_new else status.HTTP_200_OK
                 ),
@@ -85,7 +81,7 @@ class VideoService:
             )
 
     @staticmethod
-    def get_or_create_video(video_id: str, user: User) -> List[Union[Video, bool, int]]:
+    def get_or_create_video(video_id: str, user: User) -> List[Union[Video, bool]]:
         """
         Get or create video
 
@@ -100,6 +96,7 @@ class VideoService:
         video = Video.objects.filter(provider_video_id=video_id, user=user).first()
 
         if not video:
+
             video = Video.objects.create(provider_video_id=video_id, user=user)
 
             result = [
@@ -108,8 +105,5 @@ class VideoService:
             ]
         else:
             result = [video, False]
-
-        task = fetch_video_info_task.delay(video.id)
-        result.append(task.id)
 
         return result

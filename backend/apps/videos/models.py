@@ -1,3 +1,6 @@
+# Python Imports
+import uuid
+
 # Django Imports
 from django.db import models
 from django.core.serializers.json import DjangoJSONEncoder
@@ -11,7 +14,7 @@ from .utils import get_generated_video_image_path
 
 
 class Video(TimeStampMixin):
-
+    id = models.UUIDField("id", primary_key=True, default=uuid.uuid4)
     provider_video_id = models.CharField("provider video ID", max_length=36)
     user = models.ForeignKey(
         User,
