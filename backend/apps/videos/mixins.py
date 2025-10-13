@@ -22,8 +22,6 @@ class JWTAuthMixin:
         if isinstance(auth_result, JsonResponse):
             return auth_result
 
-        print("==============from mixin---request==============")
-        print("================================")
         request.user = auth_result
 
         return await super().dispatch(request, *args, **kwargs)
