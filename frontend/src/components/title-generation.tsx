@@ -1,11 +1,21 @@
 "use client";
 
-import { Usage } from "./usage";
 import { Copy } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+
+import { Usage } from "./usage";
+import { getVideoTitles } from "@/lib/api/video/fetchers";
 
 export const TitleGeneration = ({ videoId }: { videoId: string }) => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["videos", videoId, "titles", "list"],
+    queryFn: () => getVideoTitles({ videoId }),
+    enabled: !!videoId,
+  });
   const isTitleGenerationEnabled = true;
-  const titles = [];
+  console.log("=====================");
+  console.log(data);
+  console.log("=====================");
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -18,7 +28,7 @@ export const TitleGeneration = ({ videoId }: { videoId: string }) => {
       </div>
 
       <div className="space-y-3 mt-4 max-h-[280px] overflow-y-auto ">
-        {titles?.map((title) => (
+        {data?.map((title) => (
           <div
             key={title?.id}
             className="group relative p-4 rounded-lg border border-blue-600 bg-[#3e3e68] hover:bg-[#5a5a8c] transition-all duration-500"
@@ -40,7 +50,7 @@ export const TitleGeneration = ({ videoId }: { videoId: string }) => {
       </div>
 
       {/** No titles generated yet */}
-      {!titles?.length && !!isTitleGenerationEnabled && (
+      {!data?.length && !!isTitleGenerationEnabled && (
         <div className="text-center py-8 px-4 rounded-lg mt-4 border-2 border-dashed border-blue-600">
           <p className="text-gray-400">No titles have been generated yet</p>
           <p className="text-sm text-gray-400 mt-1">

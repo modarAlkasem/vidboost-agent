@@ -5,17 +5,15 @@ Business logic for Video's Title operations
 # Python Imports
 import logging
 
+# Django Imports
+from django.http import JsonResponse, HttpRequest
+
 # REST Framework Imports
-from rest_framework.request import Request
 from rest_framework import status
 
 
 # Third-Party Imports
 from asgiref.sync import sync_to_async
-
-# Project Imports
-
-from core.response import Response
 
 # App Imports
 from ..serializer import TitleSerializer
@@ -27,11 +25,14 @@ logger = logging.getLogger(__name__)
 class TitleService:
 
     @staticmethod
-    async def list(request: Request, video_id: str) -> Response:
+    async def list(request: HttpRequest, video_id: str) -> JsonResponse:
         """
         GET /api/videos/video_id/titles/
 
         """
+        print("=============request.user================")
+        print(request)
+        print("=" * 20)
         logger.info(
             "Video titles requested",
             extra={
@@ -46,6 +47,7 @@ class TitleService:
             titles = await sync_to_async(list)(video.titles.all())
 
             serializer = TitleSerializer(instance=titles, many=True)
+            serialized_data = await sync_to_async(lambda: serializer.data)()
             logger.info(
                 "Video's titles Fetched successfully!",
                 extra={
@@ -54,7 +56,9 @@ class TitleService:
                 },
             )
 
-            return Response(data=serializer.data, status_code=status.HTTP_200_OK)
+            return JsonResponse(
+                data=serialized_data, status=status.HTTP_200_OK, safe=False
+            )
 
         except Video.DoesNotExist:
 
@@ -65,7 +69,7 @@ class TitleService:
                     "video_id": video_id,
                 },
             )
-            return Response(
+            return JsonResponse(
                 data={"video_id": "Invalid 'video_id' param"},
-                status_code=status.HTTP_400_BAD_REQUEST,
+                status=status.HTTP_400_BAD_REQUEST,
             )

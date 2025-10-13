@@ -30,3 +30,17 @@ export type VideoDetails = {
   published_at: string;
   channel: ChannelDetails;
 };
+
+export type VideoTitle = {
+  id: number;
+  title: string;
+  video: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type GetVideoTitlesPayload = {
+  videoId: string;
+};
+
+export type GetVideoTitlesResponse = VideoTitle[];
