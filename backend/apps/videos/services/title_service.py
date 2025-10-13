@@ -30,9 +30,7 @@ class TitleService:
         GET /api/videos/video_id/titles/
 
         """
-        print("=============request.user================")
-        print(request)
-        print("=" * 20)
+
         logger.info(
             "Video titles requested",
             extra={
