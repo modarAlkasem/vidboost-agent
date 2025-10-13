@@ -7,15 +7,12 @@ import { Usage } from "./usage";
 import { getVideoTitles } from "@/lib/api/video/fetchers";
 
 export const TitleGeneration = ({ videoId }: { videoId: string }) => {
-  const { data, isLoading, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ["videos", videoId, "titles", "list"],
     queryFn: () => getVideoTitles({ videoId }),
     enabled: !!videoId,
   });
   const isTitleGenerationEnabled = true;
-  console.log("=====================");
-  console.log(data);
-  console.log("=====================");
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);

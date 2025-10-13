@@ -13,6 +13,7 @@ from core.response import Response
 # App Imports
 from .services.video_service import VideoService
 from .services.title_service import TitleService
+from .services.image_service import ImageService
 from .mixins import JWTAuthMixin
 
 
@@ -28,3 +29,8 @@ class VideoViewSet(ViewSet):
 class VideoTitlesView(JWTAuthMixin, View):
     async def get(self, request: HttpRequest, video_id) -> JsonResponse:
         return await TitleService.list(request, video_id)
+
+
+class VideoImageView(JWTAuthMixin, View):
+    async def get(self, request: HttpRequest, video_id) -> JsonResponse:
+        return await ImageService.list(request, video_id)
