@@ -13,6 +13,7 @@ import {
   VideoAnalysisTaskWebSocket,
   type VideoAnalysisTaskData,
 } from "@/lib/websocket/video-analysis-task-websocket";
+import { AIAgentChat } from "@/components/ai-agent-chat";
 
 const VideoAnalysisPage = () => {
   const params = useParams();
@@ -80,6 +81,10 @@ const VideoAnalysisPage = () => {
         </div>
 
         {/** Right Side */}
+        <div className="order-1 lg:order-2 lg:sticky lg:top-20 h-[500px] md:h-[calc(100vh-6rem)]">
+          {/** AI Agent Chat Section */}
+          <AIAgentChat videoId={videoId} />
+        </div>
       </div>
     </div>
   );
