@@ -54,11 +54,11 @@ class Meta:
 class Transcript(TimeStampMixin):
     transcript = models.JSONField(encoder=DjangoJSONEncoder)
 
-    video = models.ForeignKey(
+    video = models.OneToOneField(
         Video,
         verbose_name="video",
         on_delete=models.CASCADE,
-        related_name="transcripts",
+        related_name="related_transcript",
         related_query_name="transcript",
     )
 
