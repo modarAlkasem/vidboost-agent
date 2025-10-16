@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.authentication",
     "apps.core",
     "apps.videos",
+    "apps.chat",
 ]
 
 MIDDLEWARE = [
