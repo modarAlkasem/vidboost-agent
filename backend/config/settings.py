@@ -241,3 +241,7 @@ MEDIA_URL = (
     if STORAGE_BACKEND == "S3"
     else "static/"
 )
+
+
+# AI
+HUGGINGFACE_API_KEY = config("HUGGINGFACE_API_KEY", default=None)
