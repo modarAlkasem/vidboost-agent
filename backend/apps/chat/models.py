@@ -52,7 +52,7 @@ class ChatMessage(CreatedAtMixin):
         "role", max_length=10, choices=ChatMessageRoleChoices.choices
     )
     content = models.TextField()
-    tools_calls = models.JSONField(encoder=DjangoJSONEncoder, default=list)
+    tools_calls = models.JSONField(encoder=DjangoJSONEncoder, default=list, null=True)
 
     class Meta:
         ordering = ("created_at",)
