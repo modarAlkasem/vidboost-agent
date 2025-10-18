@@ -4,11 +4,14 @@ Service defines Tools called by AI Agent
 
 # Python Imports
 import logging
-from typing import Optional, List, Dict
+from typing import Optional, List, Annotated
+
+# Django Imports
+from django.core.files.base import ContentFile
 
 # Third Party Imports
-from botocore.exceptions import ClientError
-from langchain.tools import Tool
+from requests.exceptions import HTTPError
+from langchain_core.tools import StructuredTool
 
 # App Imports
 from .image_generation_service import ImageGenerationService
@@ -29,7 +32,7 @@ class AIAgentToolsService:
         self.image_generation = ImageGenerationService
 
     def get_video_info(self, query: str = "") -> str:
-        """Fetch video info (title, views, likes, comments,etc)"""
+        """Fetch current Youtube video information including title, description, views,likes, comments,channel's name. use this when user asks about video state or metadata."""
 
         try:
             video_info = self.youtube_service.fetch_video_info(
@@ -51,8 +54,8 @@ class AIAgentToolsService:
         except Exception as e:
             return f" Error fetching video info: {str(e)}"
 
-    def get_transcript(self, query: str = "") -> str:
-        """Fetch video transcript"""
+    def get_transcript(self) -> str:
+        """Fetch current video transcription. Use this when user asks to analyze content, generate summaries,generate video thumbnail or create script based on the video."""
 
         try:
             if self.video.related_transcript:
@@ -67,36 +70,50 @@ class AIAgentToolsService:
         except Exception as e:
             return f" Error fetching video transcript: {str(e)}"
 
-    def generate_image(self, prompt: str) -> str:
-        """Generate video's thumbnail"""
+    def generate_image(
+        self, prompt: Annotated[str, "Detailed description about the desired image.ed "]
+    ) -> dict:
+        """Generating YouTube video thumbnail using AI. Use this tool when user asks to generate video thumbnails. Then you must call upload_generated_image tool for uploading/saving the image and getting it's URL"""
 
         try:
-            img_url = self.image_generation.generate_with_hugginface(
-                prompt, self.video.id, self.video.user.id
-            )
+            img = self.image_generation.generate_with_hugginface(prompt, self.video)
 
-            return f"Image generated successfully! URL: {img_url}"
+            return {
+                "output": "Image generated successfully",
+                "artifacts": {"img_data": img},
+            }
 
-        except (ClientError, Exception) as e:
+        except HTTPError as e:
             return f" Error generating video's thumbnail : {str(e)}"
 
-    def get_tool_list(self) -> List[Tool]:
-        """Return list of LangChain tools"""
+    def upload_generated_image(
+        self, img: Annotated[ContentFile, "AI generated video thumbnail"]
+    ) -> str:
+        try:
+            img_url = self.image_generation.upload_generated_image(img, self.video)
 
+            return f"Video thumbnail has been uploaded and saved successfully, URL: {img_url}"
+        except Exception as e:
+            return f" Error uploading video's thumbnail : {str(e)}"
+
+    def get_tool_list(self) -> List[StructuredTool]:
+        """Return list of LangChain tools"""
+        StructuredTool.from_function(
+            self.get_video_info, name="get_video_info", infer_schema=True
+        )
         return [
-            Tool(
-                name="get_video_info",
-                func=self.get_video_info,
-                description="Fetch current Youtube video information including title, description, views,likes, comments,channel's name. use this when user asks about video state or metadata.",
+            StructuredTool.from_function(
+                self.get_video_info, name="get_video_info", infer_schema=True
             ),
-            Tool(
-                name="get_video_transcript",
-                func=self.get_transcript,
-                description="Fetch current video transcription. Use this when user asks to analyze content, generate summaries,generate video thumbnail or create script based on the video.",
+            StructuredTool.from_function(
+                self.get_transcript, name="get_transcript", infer_schema=True
             ),
-            Tool(
-                name="generate_image",
-                func=self.generate_image,
-                description="Generating YouTube video thumbnail using AI. Input should be detailed description about the desired image. Use this tool when user asks to generate video thumbnails.",
+            StructuredTool.from_function(
+                self.generate_image, name="generate_image", infer_schema=True
+            ),
+            StructuredTool.from_function(
+                self.upload_generated_image,
+                name="upload_generated_image",
+                infer_schema=True,
             ),
         ]
