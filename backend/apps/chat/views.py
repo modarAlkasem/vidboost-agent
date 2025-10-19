@@ -10,6 +10,7 @@ from core.mixins import JWTAuthMixin
 
 # App Imports
 from .services.chat_session_service import ChatSessionService
+from .services.chat_message_service import ChatMessageService
 
 
 class ChatSessionView(JWTAuthMixin, View):
@@ -18,3 +19,8 @@ class ChatSessionView(JWTAuthMixin, View):
         self, request: HttpRequest, *args: Tuple, **kwargs: Dict
     ) -> JsonResponse:
         return await ChatSessionService.create(request, *args, **kwargs)
+
+
+class ChatMessageView(JWTAuthMixin):
+    async def get(request: HttpRequest, *args: Tuple, **kwargs: Dict) -> JsonResponse:
+        return await ChatMessageService.get(request, *args, **kwargs)
