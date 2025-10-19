@@ -25,7 +25,7 @@ from ..constants import ChatMessageRoleChoices
 logger = logging.Logger(__name__)
 
 
-class AIAgentServic:
+class AIAgentService:
     """
     Service for managing AI Agent conversations
     """
@@ -182,7 +182,7 @@ class AIAgentServic:
             logger.error(f"Error processing message: {e}")
             raise Exception(str(e))
 
-    async def proccess_message(self, user_message: str):
+    async def stream_message(self, user_message: str):
         """
         Stream agent response token by token (for WebSocket)
         Yields chunks of text as they're generated
@@ -209,4 +209,5 @@ class AIAgentServic:
                 role=ChatMessage.Role.ASSISTANT, content=full_response
             )
         except Exception as e:
-            pass
+            logger.error(f"Error streaming message: {e}")
+            yield f"Error: {str(e)}"
