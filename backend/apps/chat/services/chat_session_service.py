@@ -53,7 +53,8 @@ class ChatSessionService:
             finally:
 
                 return JsonResponse(
-                    data=ChatSessionModelSerializer(instance=chat_session).data,
+                    data=ChatSessionModelSerializer(instance=chat_session).data
+                    | {"is_new": is_new},
                     status=status.HTTP_201_CREATED if is_new else status.HTTP_200_OK,
                     safe=False,
                 )
