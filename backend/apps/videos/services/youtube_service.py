@@ -62,7 +62,8 @@ class YouTubeService:
                     "channel": {
                         "id": info.get("channel_id", ""),
                         "name": info.get("channel", ""),
-                        "thumbnail": info.get("channel_thumbnail_url", ""),
+                        "thumbnail": info.get("channel_thumbnail_url")
+                        or "/images/default-channel.jpg",
                         "subscriber_count": info.get("channel_follower_count", 0),
                     },
                 }

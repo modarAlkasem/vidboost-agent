@@ -156,8 +156,8 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
       </div>
 
       {/** Input Form */}
-      <div className="border-t border-blue-400">
-        <div className="space-y-3">
+      <div className="border-t border-blue-400 p-4">
+        <div className="space-y-4">
           <Form {...form}>
             <form
               className="flex gap-2"
@@ -191,7 +191,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
                 />
               </fieldset>
               <Button
-                className="px-4 py-2 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-colors duration-300  rounded-xl text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-transparent shadow-[0_0_6px_3px_rgba(37,99,235,0.5)] hover:shadow-[0_0_10px_6px_rgba(37,99,235,0.5)] transition-colors duration-300  rounded-xl text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={
                   status === "streaming" ||
                   status === "submitted" ||
@@ -208,9 +208,9 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
             </form>
           </Form>
 
-          <div className="flex gap-2">
+          <div className="flex gap-4 ">
             <button
-              className="text-xs xl:text-sm flex items-center justify-center gap-2 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-colors duration-300 text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1  py-2 px-4 text-xs xl:text-sm flex items-center justify-center gap-2 bg-transparent shadow-[0_0_6px_3px_rgba(37,99,235,0.5)] hover:shadow-[0_0_10px_6px_rgba(37,99,235,0.5)] transition-colors duration-300 text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl"
               onClick={generateScript}
               disabled={!isScriptGenerationEnabled}
             >
@@ -222,7 +222,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
               )}
             </button>
             <button
-              className="text-xs xl:text-sm flex items-center justify-center gap-2 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-colors duration-300  text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className=" flex-1 py-2 px-4 text-xs xl:text-sm flex items-center justify-center gap-2 bg-transparent shadow-[0_0_6px_3px_rgba(37,99,235,0.5)] hover:shadow-[0_0_10px_6px_rgba(37,99,235,0.5)] transition-colors duration-300  text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed  rounded-xl"
               onClick={generateTitle}
               disabled={!isTitleGenerationEnabled}
             >
@@ -234,7 +234,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
               )}
             </button>
             <button
-              className="text-xs xl:text-sm flex items-center justify-center gap-2 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-colors duration-300  text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 py-2 px-4 text-xs xl:text-sm flex items-center justify-center gap-2 bg-transparent shadow-[0_0_6px_3px_rgba(37,99,235,0.5)] hover:shadow-[0_0_10px_6px_rgba(37,99,235,0.5)] transition-colors duration-300  text-blue-500 hover:text-blue-300 disabled:opacity-50 disabled:cursor-not-allowed  rounded-xl"
               onClick={generateImage}
               disabled={!isImageGenerationEnabled}
             >

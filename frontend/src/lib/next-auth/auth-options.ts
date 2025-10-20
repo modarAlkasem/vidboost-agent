@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import type { GoogleProfile } from "next-auth/providers/google";
 import { DateTime } from "luxon";
 
-import { signInFetcher, signInSocialFetcher } from "../api";
+import { signInFetcher, signInSocialFetcher, refreshAccessToken } from "../api";
 import { ErrorCode } from "./error-codes";
 
 import {
@@ -18,7 +18,6 @@ import {
 } from "../constants/auth";
 import { extractNextAuthRequestMetadata } from "../utils";
 import { JWT } from "next-auth/jwt";
-import api from "../axios";
 
 export const NEXT_AUTH_OPTIONS: AuthOptions = {
   secret: AUTH_SECRET(),
@@ -109,21 +108,24 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
 
           accessToken: user.access_token,
           refreshToken: user.refresh_token,
-          expires: DateTime.now().toUTC().plus({ minutes: 5 }).toISO(),
+          expires: DateTime.now().plus({ minutes: 5 }).toUTC().toString(),
         } satisfies JWT;
       }
 
-      if (
-        DateTime.fromISO(token.expires) >=
-        DateTime.now().toUTC().plus({ minutes: 5 })
-      ) {
-        const result = await api.post("/auth/token/refresh/", {
-          refresh: token.refreshToken,
-        });
-
-        token.accessToken = result.data.access_token;
-        token.refreshToken = result.data.refresh_token;
-        token.expires = DateTime.now().toUTC().toISO();
+      if (DateTime.fromISO(token.expires).toUTC() <= DateTime.now().toUTC()) {
+        try {
+          const result = await refreshAccessToken({
+            refreshToken: token.refreshToken,
+          });
+          resultToken.accessToken = result.access;
+          resultToken.refreshToken = result.refresh;
+          resultToken.expires = DateTime.now()
+            .plus({ minutes: 5 })
+            .toUTC()
+            .toString();
+        } catch (err) {
+          console.error(err);
+        }
       }
 
       return resultToken satisfies JWT;
@@ -131,7 +133,6 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
 
     session({ session, token }) {
       return {
-        ...session,
         user: {
           id: token.id,
           name: token.name,

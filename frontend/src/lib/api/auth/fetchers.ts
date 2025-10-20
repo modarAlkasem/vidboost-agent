@@ -7,6 +7,8 @@ import {
   SignInSocialPayload,
   SignInSocialResponse,
   SignOutPayload,
+  RefreshAccessTokenPayload,
+  RefreshAccessTokenResponse,
 } from "./types";
 
 export const signUpFetcher = async ({ email, password }: SignUpPayload) => {
@@ -57,4 +59,17 @@ export const signOutFetcher = async ({ refresh_token }: SignOutPayload) => {
   await api.post<null>("/auth/signout/", {
     refresh_token,
   });
+};
+
+export const refreshAccessToken = async ({
+  refreshToken,
+}: RefreshAccessTokenPayload): Promise<RefreshAccessTokenResponse> => {
+  const response = await api.post<RefreshAccessTokenResponse>(
+    "/auth/token/refresh/",
+    {
+      refresh: refreshToken,
+    }
+  );
+
+  return response.data;
 };
