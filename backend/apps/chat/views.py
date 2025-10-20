@@ -21,6 +21,6 @@ class ChatSessionView(JWTAuthMixin, View):
         return await ChatSessionService.create(request, *args, **kwargs)
 
 
-class ChatMessageView(JWTAuthMixin):
+class ChatMessageView(JWTAuthMixin, View):
     async def get(request: HttpRequest, *args: Tuple, **kwargs: Dict) -> JsonResponse:
         return await ChatMessageService.get(request, *args, **kwargs)

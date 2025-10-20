@@ -13,7 +13,7 @@ from core.response import Response
 from .services.video_service import VideoService
 from .services.title_service import TitleService
 from .services.image_service import ImageService
-from ..core.mixins import JWTAuthMixin
+from core.mixins import JWTAuthMixin
 
 
 class VideoViewSet(ViewSet):
