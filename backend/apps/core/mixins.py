@@ -59,7 +59,10 @@ class JWTAuthMixin:
                 )
 
             return user
-        except (InvalidToken, TokenError):
+        except (InvalidToken, TokenError) as e:
+            print("===================e=================")
+            print(e)
+            print("================================")
             return JsonResponse(
                 data={"detail": "Invalid or expired token"},
                 status=status.HTTP_401_UNAUTHORIZED,

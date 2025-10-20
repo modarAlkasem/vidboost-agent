@@ -27,7 +27,7 @@ export const YoutubeVideoDetails = ({
         {/** Video Thumbnail */}
         <div className="flex-shrink-0">
           <Image
-            src={videoInfo?.thumbnail_high_res ?? videoInfo?.thumbnail ?? ""}
+            src={videoInfo?.thumbnail_high_res ?? videoInfo?.thumbnail ?? null}
             alt="Youtube Video Thumbnail"
             width={500}
             height={500}
@@ -44,7 +44,7 @@ export const YoutubeVideoDetails = ({
           {/** Channel Info */}
           <div className="flex items-center gap-4">
             <Image
-              src={videoInfo?.channel.thumbnail ?? ""}
+              src={videoInfo?.channel.thumbnail ?? null}
               alt="Youtube channel Thumbnail"
               width={48}
               height={48}

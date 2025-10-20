@@ -25,7 +25,7 @@ export const getVideoTitles = async ({
     `/videos/${videoId}/titles/`
   );
 
-  return response.data;
+  return response.data || [];
 };
 
 export const getVideoImages = async ({

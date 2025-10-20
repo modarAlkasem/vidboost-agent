@@ -30,3 +30,12 @@ export type SignInSocialResponse = SignInResponse;
 export type SignOutPayload = {
   refresh_token: string;
 };
+
+export type RefreshAccessTokenPayload = {
+  refreshToken: string;
+};
+
+export type RefreshAccessTokenResponse = {
+  access: string;
+  refresh: string;
+};

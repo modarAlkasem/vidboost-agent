@@ -22,7 +22,7 @@ api.interceptors.request.use(
       const session = await getSession();
       accessToken = session?.accessToken;
     } // Server-side: Use getServerSession
-    else {
+    else if (!config.url?.includes("auth/token/refresh/")) {
       const session = await getServerSession(NEXT_AUTH_OPTIONS);
       accessToken = session?.accessToken;
     }
