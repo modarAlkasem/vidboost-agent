@@ -148,52 +148,6 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
                   message.content
                 )}
                 <ReactMarkdown>{message.content}</ReactMarkdown>
-
-                {/* {message && message.role == "assistant" ? (
-                  // Assistant Message
-                  <div className="space-y-3">
-                    <div className="prose prose-sm max-w-none">
-                      <ReactMarkdown>
-                        {message.parts
-                          .map((part, index) =>
-                            part.type === "text" ? (
-                              part.text
-                            ) : part.type.includes("tool-") ? (
-                              <div
-                                key={index}
-                                className="bg-white/50 rounded-lg p-2 space-y-2 text-white"
-                              >
-                                <div className="font-medium text-xs">
-                                  {formatToolInvocation(
-                                    part as DynamicToolUIPart
-                                  )}
-                                </div>
-                                {(part as DynamicToolUIPart).output ? (
-                                  <pre className="text-xs bg-white/75 p-2 rounded overflow-auto max-h-40">
-                                    {JSON.stringify(
-                                      (part as DynamicToolUIPart).output,
-                                      null,
-                                      2
-                                    )}
-                                  </pre>
-                                ) : null}
-                              </div>
-                            ) : null
-                          )
-                          .join("")}
-                      </ReactMarkdown>
-                    </div>
-                  </div>
-                ) : (
-                  //User Message
-                  <ReactMarkdown>
-                    {message.parts
-                      .map((part, index) =>
-                        part.type === "text" ? part.text : null
-                      )
-                      .join(" ")}
-                  </ReactMarkdown>
-                )} */}
               </div>
             </div>
           ))}

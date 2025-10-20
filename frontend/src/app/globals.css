@@ -121,3 +121,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .no-autofill-bg:-webkit-autofill {
+    -webkit-text-fill-color: lab(77.5052 -6.4629 -36.42) !important;
+  }
+}

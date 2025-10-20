@@ -30,7 +30,7 @@ const SignOutButton = () => {
   return (
     <Button
       variant="outline"
-      className=" w-full flex justify-start items-start  gap-x-6 px-4.5 py-4 bg-transparent hover:bg-[#2D2D4D] border-none hover:cursor-pointer h-12.5"
+      className=" w-full flex justify-start items-start  gap-x-6 px-4.5 py-4 bg-[#121224] hover:bg-[#2D2D4D] border-none hover:cursor-pointer h-12.5"
       disabled={isSigningOut}
       onClick={onButtonClick}
     >

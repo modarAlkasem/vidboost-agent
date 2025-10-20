@@ -30,14 +30,14 @@ const UserButton = () => {
 
       <DropdownMenuContent
         align="end"
-        className="mt-[15px] w-[378px] bg-[#121224] hover:bg-transparent shadow-[0_0_10px_6px_rgba(37,99,235,0.5)] border-none p-0"
+        className="mt-[15px] w-[378px] bg-[#121224] hover:bg-[#121224] shadow-[0_0_10px_6px_rgba(37,99,235,0.5)] border-none p-0 "
       >
-        <DropdownMenuItem className="p-0">
+        <DropdownMenuItem className="p-0 focus:bg-transparent ">
           {" "}
           <UserInfo user={user} />
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-blue-600 my-0" />
-        <DropdownMenuItem className="p-0">
+        <DropdownMenuItem className="p-0 focus:bg-transparent">
           <SignOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
