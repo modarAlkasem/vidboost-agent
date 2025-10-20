@@ -100,9 +100,17 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
   const isTitleGenerationEnabled = true;
   const isImageGenerationEnabled = true;
 
-  const generateScript = () => {};
-  const generateTitle = () => {};
-  const generateImage = () => {};
+  const generateScript = () => {
+    sendMessage(
+      "Generate a step-by-step shooting script for this video that I can use on my own channel to produce a video that is similar to this one, dont do any other steps such as generating a image, just generate the script only!"
+    );
+  };
+  const generateTitle = () => {
+    sendMessage("Generate title for this video");
+  };
+  const generateImage = () => {
+    sendMessage("Generate a thumbnail for this video");
+  };
 
   return (
     <div className="flex flex-col h-full">
