@@ -229,7 +229,7 @@ export const AuthForm = ({
         <Button
           type="button"
           size="lg"
-          className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300"
+          className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300 hover:cursor-pointer"
           disabled={isSubmitting}
           onClick={onAuthWithGoogleClick}
         >
@@ -291,7 +291,7 @@ export const AuthForm = ({
         <Button
           type="submit"
           size="lg"
-          className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300"
+          className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300 hover:cursor-pointer"
           disabled={isSubmitting}
           loading={isSubmitting}
           loaderSize="lg"
@@ -347,7 +347,7 @@ export const AuthForm = ({
 
                   setFormMode("SIGN_IN");
                 }}
-                className="bg-transparent p-0 hover:bg-transparent hover:cursor-pointer ml-1 text-blue-600 hover:text-blue-600/50"
+                className="bg-transparent p-0 hover:bg-transparent hover:cursor-pointer ml-1 text-blue-600 hover:text-blue-600/50 "
               >
                 {" "}
                 Sign In

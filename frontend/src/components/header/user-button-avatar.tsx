@@ -12,7 +12,7 @@ const UserButtonAvatar = React.forwardRef<
   return (
     <Avatar {...props} ref={ref}>
       <AvatarImage src={user.picture} />
-      <AvatarFallback className="font-bold bg-transpa hover:rent text-blue-600  hover:text-blue-200">
+      <AvatarFallback className="font-bold bg-transpa hover:rent text-blue-600  ">
         {user.name
           ? user.name
               ?.split(" ")
