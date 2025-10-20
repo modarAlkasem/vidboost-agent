@@ -5,10 +5,10 @@ import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport, DynamicToolUIPart } from "ai";
 import { BotIcon, ImageIcon, LetterText, PenIcon } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+
+import { useAIChat } from "@/lib/websocket/hooks/useAIChat";
 
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -28,20 +28,8 @@ const TOOL_NAME_MAPPINGS = {
 export const AIAgentChat = ({ videoId }: { videoId: string }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const messageContentRef = useRef<HTMLDivElement>(null);
-  const { messages, sendMessage, status } = useChat({
-    transport: new DefaultChatTransport({
-      api: "api/chat",
-      prepareSendMessagesRequest: ({ id, messages, trigger, messageId }) => {
-        return {
-          body: {
-            messages,
-            trigger,
-            videoId,
-            messageId,
-          },
-        };
-      },
-    }),
+  const { messages, sendMessage, status, currentResponse } = useAIChat({
+    videoId,
   });
 
   const [toastId, setToastId] = useState<number | string | undefined>(
@@ -103,9 +91,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
     form.formState.isSubmitting;
 
   const onFormSubmit = ({ value }: TAIAgentFormSchema) => {
-    sendMessage({
-      text: value,
-    });
+    sendMessage(value);
     form.reset();
   };
 
@@ -117,15 +103,6 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
   const generateScript = () => {};
   const generateTitle = () => {};
   const generateImage = () => {};
-
-  const formatToolInvocation = (part: DynamicToolUIPart) => {
-    // console.log(part);
-    if (!part?.output) return "Unknown Tool";
-
-    return `🔧 Tool Used: ${
-      TOOL_NAME_MAPPINGS[part.type as keyof typeof TOOL_NAME_MAPPINGS]
-    }`;
-  };
 
   return (
     <div className="flex flex-col h-full">
@@ -161,7 +138,18 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
                     : "bg-[#3e3e68] text-gray-400"
                 } rounded-2xl px-4 py-3`}
               >
-                {message.parts && message.role == "assistant" ? (
+                {message.role === "assistant" ? (
+                  <div className="space-y-3">
+                    <div className="prose prose-sm max-w-none">
+                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                    </div>
+                  </div>
+                ) : (
+                  message.content
+                )}
+                <ReactMarkdown>{message.content}</ReactMarkdown>
+
+                {/* {message && message.role == "assistant" ? (
                   // Assistant Message
                   <div className="space-y-3">
                     <div className="prose prose-sm max-w-none">
@@ -205,7 +193,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
                       )
                       .join(" ")}
                   </ReactMarkdown>
-                )}
+                )} */}
               </div>
             </div>
           ))}
@@ -217,7 +205,10 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
       <div className="border-t border-blue-400">
         <div className="space-y-3">
           <Form {...form}>
-            <form className="flex gap-2">
+            <form
+              className="flex gap-2"
+              onSubmit={form.handleSubmit(onFormSubmit)}
+            >
               <fieldset disabled={isSybmitting} className="flex-1">
                 <FormField
                   control={form.control}

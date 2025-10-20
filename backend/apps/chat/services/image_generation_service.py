@@ -47,7 +47,7 @@ class ImageGenerationService:
 
             content_type = pred_res.headers.get("Content-Type")
             ext = mimetypes.guess_extension(content_type)
-            filename = f"generated_image{ext or ".jpg"}"
+            filename = f"generated_image{ext or '.jpg'}"
 
             image_content = ContentFile(image_bytes, name=filename)
 

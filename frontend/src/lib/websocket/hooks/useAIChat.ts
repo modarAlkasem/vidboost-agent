@@ -7,7 +7,7 @@ import type { ChatMessage } from "@/lib/api/chat/types";
 import { getChatMessages, createChatSession } from "@/lib/api/chat/fetchers";
 import { NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL } from "../../constants/app";
 
-export type AIAgentStatus = "ready" | "submitted" | "replying" | "error";
+export type AIAgentStatus = "ready" | "submitted" | "streaming" | "error";
 
 export const useAIChat = ({ videoId }: { videoId: string }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -58,7 +58,7 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
         switch (data.type) {
           case "message_chunk":
             setCurrentResponse((prev) => prev + data.content);
-            setStatus("replying");
+            setStatus("streaming");
             break;
 
           case "message_complete":
