@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,6 +23,7 @@ import { Button } from "../ui/button";
 import { signUpFetcher } from "@/lib/api";
 import { AppErrorCode } from "@/lib/errors/app-error";
 import { ErrorCode, isErrorCode } from "@/lib/next-auth/error-codes";
+import { useAuthDialog } from "@/contexts/auth-dialog-context";
 
 const ZSignUpSchema = z.object({
   email: z.string().email(),
@@ -86,12 +86,9 @@ const signInSocialErrorMessages: Record<string, string> = {
   [AppErrorCode.UNKNOWN_ERROR]: signInErrorMessages[AppErrorCode.UNKNOWN_ERROR],
 };
 
-export const AuthForm = ({
-  setIsAuthDialogOpen,
-}: {
-  setIsAuthDialogOpen: (value: boolean) => any;
-}) => {
-  const [formMode, setFormMode] = useState<"SIGN_IN" | "SIGN_UP">("SIGN_IN");
+export const AuthForm = ({ callbackUrl }: { callbackUrl: string | null }) => {
+  const { authContext, setShowDialog, setAuthContext } = useAuthDialog();
+  const router = useRouter();
   const form = useForm<TSignInSchema>({
     values: {
       email: "",
@@ -99,7 +96,7 @@ export const AuthForm = ({
     },
     mode: "onChange",
     resolver:
-      formMode === "SIGN_IN"
+      authContext === "SIGN_IN"
         ? zodResolver(ZSignInSchema)
         : zodResolver(ZSignUpSchema),
   });
@@ -126,7 +123,10 @@ export const AuthForm = ({
         return;
       }
 
-      setIsAuthDialogOpen(false);
+      setShowDialog(false);
+      if (callbackUrl) {
+        router.push(callbackUrl);
+      }
     } catch (err) {
       toast.error("An unknown error occured", {
         description:
@@ -146,7 +146,7 @@ export const AuthForm = ({
         position: "top-right",
       });
       form.reset();
-      setFormMode("SIGN_IN");
+      setAuthContext("SIGN_IN");
     } catch (error: any) {
       const errorMessage =
         signUpErrorMessages[error.status_text] ??
@@ -169,7 +169,7 @@ export const AuthForm = ({
     } catch (err) {
       toast.error("An unknown error occured", {
         description:
-          formMode === "SIGN_IN"
+          authContext === "SIGN_IN"
             ? ErrorCode.UNKNOWN_ERROR
             : AppErrorCode.UNKNOWN_ERROR,
         duration: 5000,
@@ -181,12 +181,12 @@ export const AuthForm = ({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(
-          formMode === "SIGN_IN" ? onSignInFormSubmit : onSignUpFormSubmit
+          authContext === "SIGN_IN" ? onSignInFormSubmit : onSignUpFormSubmit
         )}
         className="flex flex-col items-center gap-y-4"
       >
         <AnimatePresence>
-          {formMode == "SIGN_IN" ? (
+          {authContext == "SIGN_IN" ? (
             <motion.div
               animate={{
                 opacity: 1,
@@ -296,10 +296,10 @@ export const AuthForm = ({
           loading={isSubmitting}
           loaderSize="lg"
         >
-          {formMode === "SIGN_UP" ? "Sign Up" : "Sign In"}
+          {authContext === "SIGN_UP" ? "Sign Up" : "Sign In"}
         </Button>
         <AnimatePresence>
-          {formMode == "SIGN_IN" ? (
+          {authContext == "SIGN_IN" ? (
             <motion.p
               className="mt-6 text-blue-300"
               animate={{
@@ -319,7 +319,7 @@ export const AuthForm = ({
                   form.clearErrors();
                   form.reset();
 
-                  setFormMode("SIGN_UP");
+                  setAuthContext("SIGN_UP");
                 }}
               >
                 {" "}
@@ -345,7 +345,7 @@ export const AuthForm = ({
                   form.clearErrors();
                   form.reset();
 
-                  setFormMode("SIGN_IN");
+                  setAuthContext("SIGN_IN");
                 }}
                 className="bg-transparent p-0 hover:bg-transparent hover:cursor-pointer ml-1 text-blue-600 hover:text-blue-600/50 "
               >
