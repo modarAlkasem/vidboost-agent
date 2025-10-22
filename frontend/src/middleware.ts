@@ -8,12 +8,11 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token }) => {
-        console.log("heeeeeey");
         return !!token;
       },
     },
     pages: {
-      signIn: "/",
+      signIn: "/?open-auth-dialog=true&auth-context=SIGN_IN",
     },
   }
 );

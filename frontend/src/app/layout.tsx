@@ -6,6 +6,8 @@ import { Toaster } from "sonner";
 import { NextAuthProvider } from "@/providers/next-auth-provider";
 import { QueryProvider } from "@/providers/query-provider";
 
+import { AuthDialogProvider } from "@/contexts/auth-dialog-context";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,8 +35,10 @@ export default function RootLayout({
       >
         <QueryProvider>
           <NextAuthProvider>
-            <Header />
-            <main> {children}</main>
+            <AuthDialogProvider>
+              <Header />
+              <main> {children}</main>
+            </AuthDialogProvider>
           </NextAuthProvider>
         </QueryProvider>
 

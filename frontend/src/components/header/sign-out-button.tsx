@@ -4,11 +4,13 @@ import { useState } from "react";
 import { signOut } from "next-auth/react";
 import { LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { Button } from "../ui/button";
 
 const SignOutButton = () => {
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const router = useRouter();
 
   const onButtonClick = async () => {
     try {
@@ -18,6 +20,7 @@ const SignOutButton = () => {
         callbackUrl: "/",
       });
       setIsSigningOut(false);
+      router.replace("/");
     } catch (err) {
       toast.error("An unknown error occured", {
         description:

@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useRef, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import AgentPulse from "../agent-pulse";
@@ -9,10 +10,34 @@ import { Button } from "../ui/button";
 import { Dialog, DialogTrigger, DialogContent } from "../ui/dialog";
 import { AuthForm } from "../forms/auth-form";
 import UserButton from "./user-button";
+import {
+  useAuthDialog,
+  AuthFormContextChoices,
+  type AuthContext,
+} from "@/contexts/auth-dialog-context";
 
 function Header() {
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const { setAuthContext, showDialog, setShowDialog } = useAuthDialog();
   const { data: session } = useSession();
+
+  const callbackUrlRef = useRef<string>(null);
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (
+      searchParams.get("open-auth-dialog") &&
+      searchParams.get("auth-context") &&
+      Object.values(AuthFormContextChoices).includes(
+        searchParams.get("auth-context") as AuthContext
+      ) &&
+      searchParams.get("callbackUrl")
+    ) {
+      setShowDialog(Boolean(searchParams.get("open-auth-dialog")));
+      setAuthContext(searchParams.get("auth-context") as AuthContext);
+
+      callbackUrlRef.current = searchParams.get("callbackUrl");
+    }
+  }, [searchParams, setShowDialog, setAuthContext, callbackUrlRef]);
 
   return (
     <header className="sticky inset-0 z-50 px-4 md:px-0 xl:px-4 bg-[#121224] backdrop-blur-lg border-b border-blue-600">
@@ -45,7 +70,7 @@ function Header() {
               </div>
             </>
           ) : (
-            <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
+            <Dialog open={showDialog} onOpenChange={setShowDialog}>
               <DialogTrigger asChild>
                 <Button
                   variant="outline"
@@ -67,7 +92,7 @@ function Header() {
                     Welcome! Please fill in the details to get started
                   </DialogDescription>
                 </DialogHeader> */}
-                <AuthForm setIsAuthDialogOpen={setIsAuthDialogOpen} />
+                <AuthForm callbackUrl={callbackUrlRef.current} />
               </DialogContent>
             </Dialog>
           )}
