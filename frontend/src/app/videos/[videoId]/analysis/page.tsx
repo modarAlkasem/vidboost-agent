@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
 
 import { useVideoAnalysisTask } from "@/lib/websocket/hooks/use-video-analysis-task";
 import { Usage } from "@/components/usage";
@@ -9,10 +8,6 @@ import { YoutubeVideoDetails } from "@/components/youtube-video-details";
 import { ThumbnailGeneration } from "@/components/thumbnail-generation";
 import { TitleGeneration } from "@/components/title-generation";
 import { Transcription } from "@/components/transcription";
-import {
-  VideoAnalysisTaskWebSocket,
-  type VideoAnalysisTaskData,
-} from "@/lib/websocket/video-analysis-task-websocket";
 import { AIAgentChat } from "@/components/ai-agent-chat";
 
 const VideoAnalysisPage = () => {

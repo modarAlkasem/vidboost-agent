@@ -13,7 +13,7 @@ export const createChatSession = async ({
   const response = await api.post<CreateChatSessionResponse>(
     "/chat/sessions/",
     {
-      video_id: videoId,
+      video: videoId,
     }
   );
 
