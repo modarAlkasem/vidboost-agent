@@ -3,10 +3,11 @@ from typing import Tuple, Dict
 
 # Django Imports
 from django.views import View
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 
 # Project Imports
 from core.mixins import JWTAuthMixin
+from core.response import JsonResponse
 
 # App Imports
 from .services.chat_session_service import ChatSessionService

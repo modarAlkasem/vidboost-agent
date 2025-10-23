@@ -3,13 +3,16 @@ from typing import Dict, Tuple
 import logging
 
 # Django Imports
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 
 # DRF Imports
 from rest_framework import status
 
 # Third Party Imports
 from asgiref.sync import sync_to_async
+
+# Project Import
+from core.response import JsonResponse
 
 # App Imports
 from ..serializers import ChatMessageModelSerializer

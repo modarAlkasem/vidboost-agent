@@ -4,11 +4,14 @@ from typing import Dict, Tuple
 import logging
 
 # Django Imports
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 
 # DRF Imports
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
+
+# Project Import
+from core.response import JsonResponse
 
 # App Imports
 from ..serializers import ChatSessionModelSerializer
