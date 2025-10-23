@@ -242,3 +242,4 @@ MEDIA_URL = (
 
 # AI
 HUGGINGFACE_API_KEY = config("HUGGINGFACE_API_KEY", default=None)
+GROQ_API_KEY = config("GROQ_API_KEY", default=None)
