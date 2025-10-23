@@ -1,6 +1,3 @@
-# Django Imports
-from django.http import JsonResponse
-
 # REST Framework Imports
 from rest_framework import status
 
@@ -11,6 +8,7 @@ from asgiref.sync import sync_to_async
 
 # Project Imports
 from authentication.models import User
+from core.response import JsonResponse
 
 
 class JWTAuthMixin:
@@ -60,9 +58,6 @@ class JWTAuthMixin:
 
             return user
         except (InvalidToken, TokenError) as e:
-            print("===================e=================")
-            print(e)
-            print("================================")
             return JsonResponse(
                 data={"detail": "Invalid or expired token"},
                 status=status.HTTP_401_UNAUTHORIZED,

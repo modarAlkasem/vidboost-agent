@@ -6,7 +6,7 @@ Business logic for Video's Thumbnail operations
 import logging
 
 # Django Imports
-from django.http import JsonResponse, HttpRequest
+from django.http import HttpRequest
 
 # REST Framework Imports
 from rest_framework import status
@@ -14,6 +14,9 @@ from rest_framework import status
 
 # Third-Party Imports
 from asgiref.sync import sync_to_async
+
+# Project Imports
+from core.response import JsonResponse
 
 # App Imports
 from ..serializer import TitleSerializer
@@ -71,7 +74,7 @@ class ImageService:
                 extra={"user_id": request.user.id, "video_id": video_id},
             )
 
-            return JsonResponse(data=images_data, status=status.HTTP_200_OK)
+            return JsonResponse(data=images_data, status=status.HTTP_200_OK, safe=False)
         except Video.DoesNotExist as e:
             logger.error(
                 "Video not found",

@@ -1,13 +1,13 @@
 # Django Imports
 from django.views import View
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest
 
 # REST Framework Imports
 from rest_framework.request import Request
 from rest_framework.viewsets import ViewSet
 
 # Project Imports
-from core.response import Response
+from core.response import Response, JsonResponse
 
 # App Imports
 from .services.video_service import VideoService
