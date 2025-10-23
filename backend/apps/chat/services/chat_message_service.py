@@ -26,10 +26,11 @@ class ChatMessageService:
 
     @staticmethod
     async def get(request: HttpRequest, *args: Tuple, **kwargs: Dict) -> JsonResponse:
+
         user = request.user
         session_id = kwargs.get("session_id")
         sessions = await sync_to_async(list)(
-            ChatMessage.objects.filter(user=user, session=session_id)
+            ChatMessage.objects.filter(session=session_id)
         )
         logger.info(
             f"Conversation history has been returned",
