@@ -51,7 +51,28 @@ class ImageGenerationService:
 
             image_content = ContentFile(image_bytes, name=filename)
 
-            return image_content
+            image_obj = Image(video=video, image=image_content)
+            image_obj.save()
+
+            url = S3Service.generate_presigned_url(
+                image_obj.image.name,
+            )
+
+            if not url:
+                logger.error(
+                    "Error presigning url to S3 object for generated image",
+                    extra={
+                        "user_id": video.user.id,
+                        "video_id": video.id,
+                        "image_id": image_obj.id,
+                    },
+                )
+                raise Exception(
+                    f"Error while trying to presign url to S3 object for generated image:{image_obj.id}"
+                )
+
+            return url
+            # return image_content
 
         except HTTPError as e:
 
@@ -61,26 +82,26 @@ class ImageGenerationService:
             )
             raise Exception(f"Error Generating video image: {response.text()}")
 
-    @staticmethod
-    def upload_generated_image(img: ContentFile, video: Video) -> str:
-        image_obj = Image(video=video, image=img)
-        image_obj.save()
+    # @staticmethod
+    # def upload_generated_image(img: ContentFile, video: Video) -> str:
+    #     image_obj = Image(video=video, image=img)
+    #     image_obj.save()
 
-        url = S3Service.generate_presigned_url(
-            image_obj.image.name,
-        )
+    #     url = S3Service.generate_presigned_url(
+    #         image_obj.image.name,
+    #     )
 
-        if not url:
-            logger.error(
-                "Error presigning url to S3 object for generated image",
-                extra={
-                    "user_id": video.user.id,
-                    "video_id": video.id,
-                    "image_id": image_obj.id,
-                },
-            )
-            raise Exception(
-                f"Error while trying to presign url to S3 object for generated image:{image_obj.id}"
-            )
+    #     if not url:
+    #         logger.error(
+    #             "Error presigning url to S3 object for generated image",
+    #             extra={
+    #                 "user_id": video.user.id,
+    #                 "video_id": video.id,
+    #                 "image_id": image_obj.id,
+    #             },
+    #         )
+    #         raise Exception(
+    #             f"Error while trying to presign url to S3 object for generated image:{image_obj.id}"
+    #         )
 
-        return url
+    #     return url

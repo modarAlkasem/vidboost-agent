@@ -16,6 +16,7 @@ from django.conf import settings
 
 # Project Imports
 from videos.services.youtube_service import YouTubeService
+from videos.models import Video
 
 # App Imports
 from ..models import ChatSession, ChatMessage
@@ -30,9 +31,9 @@ class AIAgentService:
     Service for managing AI Agent conversations
     """
 
-    async def __init__(self, session: ChatSession):
+    def __init__(self, session: ChatSession, system_prompt: str, video: Video):
         self.session = session
-        self.video = session.video
+        self.video = video
 
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
@@ -41,14 +42,27 @@ class AIAgentService:
         )
 
         self.tools = AIAgentToolsService(self.video)
+        self.system_prompt = system_prompt
 
-        self.system_prompt = await self._create_system_prompt()
+    @classmethod
+    async def create(cls, session: ChatSession):
+        """
+        Factory method to create AIAgentService with async initialization
+        Usage:
 
-    async def _create_system_prompt(self) -> str:
+            agent_service = await AIAgentService.create(session=session)
+        """
+
+        video = await sync_to_async(lambda: session.video)()
+        system_prompt = await cls._create_system_prompt(video)
+        return cls(session=session, video=video, system_prompt=system_prompt)
+
+    @staticmethod
+    async def _create_system_prompt(video: Video) -> str:
         """Create a system prompt based on current video context"""
 
-        video_info = sync_to_async(YouTubeService.fetch_video_info)(
-            self.video.provider_video_id
+        video_info = await sync_to_async(YouTubeService.fetch_video_info)(
+            video.provider_video_id
         )
 
         base_prompt = f""" 
@@ -71,11 +85,10 @@ class AIAgentService:
             - Always format your responses for notion
 
             Video Context:
-            - Video ID: {self.video.id}
+            - Video ID: {video.id}
             - Video Title: {video_info.get("title")}
 
         """
-
         return base_prompt
 
     async def _load_chat_history(self) -> List:
@@ -98,20 +111,22 @@ class AIAgentService:
     ) -> ChatMessage:
         """Save message to database"""
 
-        return await ChatMessage.objects.create(
+        return await ChatMessage.objects.acreate(
             role=role,
             content=content,
-            tool_calls=tool_calls or [],
+            tools_calls=tool_calls or [],
             session=self.session,
         )
 
     def create_agent(self) -> AgentExecutor:
-        prompt = ChatPromptTemplate.from_messages[
-            SystemMessage(content=self.system_prompt),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", {"input"}),
-            MessagesPlaceholder(variable_name="agent_scratchpad"),
-        ]
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                SystemMessage(content=self.system_prompt),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("human", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
 
         agent = create_openai_functions_agent(
             llm=self.llm, tools=self.tools.get_tool_list(), prompt=prompt
@@ -206,7 +221,7 @@ class AIAgentService:
                     yield text
 
             await self._save_message(
-                role=ChatMessage.Role.ASSISTANT, content=full_response
+                role=ChatMessageRoleChoices.ASSISTANT.value, content=full_response
             )
         except Exception as e:
             logger.error(f"Error streaming message: {e}")
