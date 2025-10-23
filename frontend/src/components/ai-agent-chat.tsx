@@ -28,7 +28,7 @@ const TOOL_NAME_MAPPINGS = {
 export const AIAgentChat = ({ videoId }: { videoId: string }) => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const messageContentRef = useRef<HTMLDivElement>(null);
-  const { messages, sendMessage, status, currentResponse } = useAIChat({
+  const { messages, sendMessage, status } = useAIChat({
     videoId,
   });
 
@@ -111,7 +111,6 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
   const generateImage = () => {
     sendMessage("Generate a thumbnail for this video");
   };
-
   return (
     <div className="flex flex-col h-full">
       <div className="hidden lg:block px-4 pb-3 border-b border-blue-600">
@@ -143,7 +142,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
                 className={`max-w-[85%] ${
                   message.role === "user"
                     ? "bg-blue-400 text-white"
-                    : "bg-[#3e3e68] text-gray-400"
+                    : "bg-[#3e3e68] [&_*]:text-gray-200"
                 } rounded-2xl px-4 py-3`}
               >
                 {message.role === "assistant" ? (
@@ -155,7 +154,6 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
                 ) : (
                   message.content
                 )}
-                <ReactMarkdown>{message.content}</ReactMarkdown>
               </div>
             </div>
           ))}

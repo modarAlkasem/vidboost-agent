@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 
-import { getSession, useSession } from "next-auth/react";
+import { getSession } from "next-auth/react";
 import { useMutation } from "@tanstack/react-query";
 
 import type { ChatMessage } from "@/lib/api/chat/types";
@@ -12,20 +12,20 @@ export type AIAgentStatus = "ready" | "submitted" | "streaming" | "error";
 export const useAIChat = ({ videoId }: { videoId: string }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [status, setStatus] = useState<AIAgentStatus>("ready");
-  const [currentResponse, setCurrentResponse] = useState("");
 
   const wsRef = useRef<WebSocket | null>(null);
-  const sessionIDRef = useRef("");
+  const [sessionID, setSessionID] = useState<string | null>(null);
+  const currentResponseRef = useRef<string>("");
 
   const { mutateAsync } = useMutation({
     mutationKey: ["chat-session", "create"],
     mutationFn: () => createChatSession({ videoId }),
     onSuccess: async (data, variables, onMutateResult, context) => {
-      if (data.is_new) {
+      if (!data.is_new) {
         const chatMessages = await getChatMessages({ sessionId: data.id });
-        sessionIDRef.current = data.id;
         setMessages(chatMessages);
       }
+      setSessionID(data.id);
     },
   });
 
@@ -38,14 +38,12 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
   }, [videoId]);
 
   useEffect(() => {
+    if (!sessionID) return;
     async function connect() {
       const session = await getSession();
       const accessToken = session?.accessToken;
-
       const ws = new WebSocket(
-        `ws://${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL()}/chat/${
-          sessionIDRef.current
-        }/?token=${accessToken}`
+        `${NEXT_PUBLIC_WEB_SOCKET_BASE_API_URL()}/chat/${sessionID}/?token=${accessToken}`
       );
 
       ws.onopen = (event) => {
@@ -53,11 +51,12 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
       };
 
       ws.onmessage = (event) => {
+        console.log("📩 Received WebSocket message:", event.data);
         const data = JSON.parse(event.data);
 
         switch (data.type) {
           case "message_chunk":
-            setCurrentResponse((prev) => prev + data.content);
+            currentResponseRef.current += data.content;
             setStatus("streaming");
             break;
 
@@ -67,12 +66,12 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
               {
                 id: crypto.randomUUID(),
                 role: "assistant",
-                content: currentResponse,
+                content: currentResponseRef.current as string,
                 tool_calls: [],
-                session: sessionIDRef.current,
+                session: sessionID as string,
               },
             ]);
-            setCurrentResponse("");
+            currentResponseRef.current = "";
             setStatus("ready");
             break;
 
@@ -85,7 +84,7 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
 
       ws.onerror = (event) => console.error("💬❌ WebSocket error:", event);
       ws.onclose = (event) =>
-        console.log("🔌 WebSocket connection closed", event);
+        console.log("🔌 WebSocket connection closed", event.code, event.reason);
 
       wsRef.current = ws;
     }
@@ -93,7 +92,7 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
     connect();
 
     return () => wsRef.current?.close();
-  }, [videoId]);
+  }, [videoId, sessionID]);
 
   const sendMessage = useCallback((content: string) => {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
@@ -106,7 +105,7 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
       role: "user",
       content: content,
       tool_calls: [],
-      session: sessionIDRef.current,
+      session: sessionID as string,
     };
     setMessages((prev) => [...prev, userMessage]);
 
@@ -118,6 +117,6 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
     messages,
     sendMessage,
     status,
-    currentResponse,
+    currentResponseRef,
   };
 };

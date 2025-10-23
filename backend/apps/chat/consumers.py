@@ -1,5 +1,6 @@
 # Python Imports
 import json
+import logging
 
 # Third Party Imports
 from channels.generic.websocket import AsyncWebsocketConsumer
@@ -8,6 +9,8 @@ from channels.db import database_sync_to_async
 # App Imports
 from .services.ai_agent_service import AIAgentService
 from .models import ChatSession
+
+logger = logging.Logger(__name__)
 
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -18,13 +21,26 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.session_id = self.scope["url_route"]["kwargs"]["session_id"]
         self.room_group_name = f"chat_{self.session_id}"
 
-        if not ChatSession.objects.filter(user=self.scope.get("user")):
+        session_obj = await self.get_session()
+        if not session_obj:
+
             await self.close(code=4001)
             return
 
-        self.channel_layer.group_add(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_add(self.room_group_name, self.channel_name)
 
         await self.accept()
+        logger.info(f"Websocket connection opend for {self.session_id}")
+        await self.send(
+            text_data=json.dumps(
+                {
+                    "type": "connection",
+                    "session_id": self.session_id,
+                    "message": "Connected to AI Agent Chat",
+                    "status": "connected",
+                }
+            )
+        )
 
     async def disconnect(self):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
@@ -46,7 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             return
 
-        agent_service = AIAgentService(session=session)
+        agent_service = await AIAgentService.create(session=session)
 
         try:
             async for chunk in agent_service.stream_message(message):
