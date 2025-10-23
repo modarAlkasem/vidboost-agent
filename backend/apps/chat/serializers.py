@@ -10,6 +10,7 @@ class ChatSessionModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChatSession
         fields = "__all__"
+        validators = []
 
 
 class ChatMessageModelSerializer(serializers.ModelSerializer):

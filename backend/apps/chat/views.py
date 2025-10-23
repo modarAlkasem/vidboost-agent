@@ -27,5 +27,7 @@ class ChatSessionView(JWTAuthMixin, View):
 
 @method_decorator([csrf_exempt], name="dispatch")
 class ChatMessageView(JWTAuthMixin, View):
-    async def get(request: HttpRequest, *args: Tuple, **kwargs: Dict) -> JsonResponse:
+    async def get(
+        self, request: HttpRequest, *args: Tuple, **kwargs: Dict
+    ) -> JsonResponse:
         return await ChatMessageService.get(request, *args, **kwargs)

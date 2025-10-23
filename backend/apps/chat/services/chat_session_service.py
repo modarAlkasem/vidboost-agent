@@ -10,6 +10,9 @@ from django.http import HttpRequest
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 
+# Third Party Imports
+from asgiref.sync import sync_to_async
+
 # Project Import
 from core.response import JsonResponse
 
@@ -30,12 +33,12 @@ class ChatSessionService:
         data = json.loads(request.body)
         user = request.user
 
-        data["user"] = user
+        data["user"] = user.id
         is_new = False
         chat_session = None
         try:
             serializer = ChatSessionModelSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
+            await sync_to_async(serializer.is_valid)(raise_exception=True)
 
             try:
                 video = serializer.validated_data.get("video")
@@ -54,7 +57,6 @@ class ChatSessionService:
                 )
 
             finally:
-
                 return JsonResponse(
                     data=ChatSessionModelSerializer(instance=chat_session).data
                     | {"is_new": is_new},
