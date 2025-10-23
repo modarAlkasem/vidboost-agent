@@ -27,7 +27,7 @@ class ChatSessionService:
     async def create(
         request: HttpRequest, *args: Tuple, **kwargs: Dict
     ) -> JsonResponse:
-        data = json.loads(request.POST)
+        data = json.loads(request.body)
         user = request.user
 
         data["user"] = user

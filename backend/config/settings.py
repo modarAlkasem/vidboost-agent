@@ -34,8 +34,6 @@ DEBUG = config("DEBUG", default=False, cast=bool)
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")]
 )
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -175,7 +173,6 @@ CORS_ALLOWED_ORIGINS = [
     config("FRONTEND_ORIGIN", cast=str, default="http://localhost:3000")
 ]
 CORS_ALLOW_CREDENTIALS = True
-
 
 # Redis & Channels
 CHANNEL_LAYERS = {
