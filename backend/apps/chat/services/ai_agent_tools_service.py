@@ -80,7 +80,7 @@ class AIAgentToolsService:
         try:
             img_url = self.image_generation.generate_with_hugginface(prompt, self.video)
 
-            return f"Image generated successfully!, Image URL: {img_url}"
+            return {"image": img_url}
 
         except HTTPError as e:
             return f" Error generating video's thumbnail : {str(e)}"

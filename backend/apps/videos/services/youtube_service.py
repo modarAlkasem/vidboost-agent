@@ -1,6 +1,7 @@
 # Python Imports
 from typing import Dict, Optional, List
 import logging
+from datetime import datetime
 
 # Third Party Imports
 import yt_dlp
@@ -15,8 +16,8 @@ class YouTubeService:
     Service for fetching YouTube video data
     """
 
-    @staticmethod
-    def fetch_video_info(video_id: str) -> Dict:
+    @classmethod
+    def fetch_video_info(cls, video_id: str) -> Dict:
         """
         Fetch YouTube video metadata using yt-dlp
 
@@ -46,7 +47,6 @@ class YouTubeService:
                 info = ydl.extract_info(
                     f"https://www.youtube.com/watch?v={video_id}", download=False
                 )
-
                 return {
                     "title": info.get("title"),
                     "description": info.get("description", ""),
@@ -58,13 +58,17 @@ class YouTubeService:
                     "view_count": info.get("view_count", "Not Available"),
                     "like_count": info.get("like_count", "Not Available"),
                     "comment_count": info.get("comment_count", "Not Available"),
-                    "published_at": info.get("upload_date", "Not Available"),
+                    "published_at": cls.format_date(
+                        info.get("upload_date", "Not Available")
+                    ),
                     "channel": {
                         "id": info.get("channel_id", ""),
                         "name": info.get("channel", ""),
                         "thumbnail": info.get("channel_thumbnail_url")
                         or "/images/default-channel.jpg",
-                        "subscriber_count": info.get("channel_follower_count", 0),
+                        "subscriber_count": cls.humanize_number(
+                            info.get("channel_follower_count", 0)
+                        ),
                     },
                 }
         except Exception as e:
@@ -137,3 +141,25 @@ class YouTubeService:
                 return f"00:{secs:02d}"
             return f"{minutes:02d}:{secs:02d}"
         return f"{hours}:{minutes:02d}:{secs:02d}"
+
+    @staticmethod
+    def humanize_number(num: int) -> str:
+        for unit in ["", "K", "M", "B", "T"]:
+            if abs(num) < 1000:
+                return f"{num:.0f}{unit}"
+            num /= 1000.0
+        return f"{num:.1f}P"
+
+    @staticmethod
+    def format_date(date_str: str) -> str:
+
+        published_at = None
+
+        if date_str:
+            try:
+                published_at = datetime.strptime(date_str, "%Y%m%d").isoformat()
+            except:
+
+                published_at = date_str
+
+        return published_at

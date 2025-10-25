@@ -74,7 +74,6 @@ class ImageGenerationService:
             return url
 
         except HTTPError as e:
-
             logger.error(
                 "Error Generating video image",
                 extra={"user_id": video.user.id, "video_id": video.id},
