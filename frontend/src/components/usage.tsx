@@ -6,8 +6,8 @@ export const Usage = ({ title }: { title: string }) => {
   const isPending = false;
   const hasUsedAllTokens = false;
   const isFeatureEnabled = true;
-  const featureUsage = 3;
-  const featureAllocation = 12;
+  const featureUsage = 1;
+  const featureAllocation = 5;
 
   if (isPending) {
     return <div className="text-gray-200 text-center py-4">Loading...</div>;
@@ -73,7 +73,7 @@ export const Usage = ({ title }: { title: string }) => {
         <h2 className="text-xl font-semibold text-white">{title}</h2>
         <div className="rounded-lg bg-[#3e3e68] py-2 px-4">
           <span className="font-medium text-gray-400">{featureUsage}</span>
-          <span className="font-medium text-gray-600">/</span>
+          <span className="font-medium text-gray-300">/</span>
           <span className="font-medium text-gray-400">{featureAllocation}</span>
         </div>
       </div>

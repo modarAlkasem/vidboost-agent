@@ -119,7 +119,7 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
 
       {/** messages */}
       <div className="fle-1 overflow-y-auto p-4" ref={messageContentRef}>
-        <div className="space-y-6">
+        <div>
           {messages.length === 0 && (
             <div className="flex items-center justify-center h-full min-h-[200px] flex-col gap-y-4">
               <h3 className="text-lg font-medium text-gray-400">
@@ -131,21 +131,21 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
               </p>
             </div>
           )}
-          <div className="min-h-[200px]">
+          <div className="min-h-[200px] space-y-6">
             {" "}
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${
                   message.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                } `}
               >
                 <div
                   className={`max-w-[85%] ${
                     message.role === "user"
                       ? "bg-blue-400 text-white"
                       : "bg-[#3e3e68] [&_*]:text-gray-200"
-                  } rounded-2xl px-4 py-3`}
+                  } rounded-2xl px-4 py-3 `}
                 >
                   {message.role === "assistant" ? (
                     <div className="space-y-3 ">
