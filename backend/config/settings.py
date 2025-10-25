@@ -204,40 +204,23 @@ GOOGLE_API_KEY = config("GOOGLE_API_KEY")
 # YouTube API Key
 YOUTUBE_API_KEY = config("YOUTUBE_API_KEY")
 
-
-# Uploaded-file Storage
-STORAGE_BACKEND = config("STORAGE_BACKEND", default="filesystem")
-
-# if STORAGE_BACKEND == "S3":
-#     # AWS S3 Configurations
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+}
 
 AWS_ACCESS_KEY_ID = config("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = config("AWS_SECRET_ACCESS_KEY")
 AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
 AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default="us-east-1")
 AWS_DEFAULT_ACL = "private"
-AWS_S3_OBJECT_PARAMETERS = {"CacheControl": {"max-age": 86400}}
+AWS_S3_OBJECT_PARAMETERS = {"CacheControl": "max-age=86400"}
 AWS_PRESIGNED_URL_EXPIRATION = 3600
+AWS_S3_SIGNATURE_VERSION = "s3v4"
 
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-# else:
-#     MEDIA_ROOT = os.path.join(BASE_DIR.as_posix(), "media")
-#     STATIC_ROOT = os.path.join(BASE_DIR.as_posix(), "staticfiles")
-
-
-STATIC_URL = (
-    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonawas.com/static-files/"
-    if STORAGE_BACKEND == "S3"
-    else "static/"
-)
-
-MEDIA_URL = (
-    f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonawas.com/media/"
-    if STORAGE_BACKEND == "S3"
-    else "static/"
-)
 
 
 # AI

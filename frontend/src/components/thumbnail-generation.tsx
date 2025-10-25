@@ -30,7 +30,7 @@ export const ThumbnailGeneration = ({ videoId }: { videoId: string }) => {
             image.url && (
               <div
                 key={image.id}
-                className="flex-none w-[200px] h-[110px] rouned-lg overflow-y-hidden overflow-x-auto"
+                className=" w-[200px] h-[200px] rouned-lg overflow-y-hidden overflow-x-auto"
               >
                 <Image
                   src={image.url}

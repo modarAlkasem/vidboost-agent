@@ -61,7 +61,7 @@ class AIAgentToolsService:
 
         try:
             if self.video.related_transcript:
-                video_transcript = self.video.related_transcript
+                video_transcript = self.video.related_transcript.transcript
             else:
                 video_transcript = self.youtube_service.fetch_transcript(
                     self.video.provider_video_id
@@ -75,8 +75,6 @@ class AIAgentToolsService:
     def generate_image(
         self, prompt: Annotated[str, "Detailed description about the desired image.ed "]
     ) -> dict:
-        # """Generating YouTube video thumbnail using AI. Use this tool when user asks to generate video thumbnails. Then you must call upload_generated_image tool for uploading/saving the image and getting it's URL"""
-
         """Generating YouTube video thumbnail using AI. Use this tool when user asks to generate video thumbnails."""
 
         try:
@@ -87,7 +85,7 @@ class AIAgentToolsService:
         except HTTPError as e:
             return f" Error generating video's thumbnail : {str(e)}"
 
-    async def generate_title(
+    def generate_title(
         self,
         summary: Annotated[
             str, "Short summary of the video content to inspire the title"
@@ -96,7 +94,7 @@ class AIAgentToolsService:
             Optional[str], "Short summary of the video content to inspire the title"
         ] = None,
     ) -> str:
-        """Generate an engaging YouTube title based on the video summary and optional user considerations.. Use this tool when user asks to generate video title."""
+        """Generate an engaging YouTube title based on the video summary and optional user considerations. Use this tool when user asks to generate video title and return just title without any addition because is gonna be cached in database."""
         groq_llm = ChatGroq(
             model="llama-3.3-70b-versatile",
             temperature=0.7,
@@ -114,10 +112,10 @@ class AIAgentToolsService:
         ]
 
         try:
-            response = await groq_llm.ainvoke(messages)
+            response = groq_llm.invoke(messages)
             title = response.content
 
-            await Title.objects.acreate(title=title, video=self.video)
+            Title.objects.create(title=title, video=self.video)
 
             return f"title generated successfully!, Title: {title}"
 

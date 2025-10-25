@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,7 @@ import { signUpFetcher } from "@/lib/api";
 import { AppErrorCode } from "@/lib/errors/app-error";
 import { ErrorCode, isErrorCode } from "@/lib/next-auth/error-codes";
 import { useAuthDialog } from "@/contexts/auth-dialog-context";
+import { useSignInStatus } from "@/contexts/signin-context";
 
 const ZSignUpSchema = z.object({
   email: z.string().email(),
@@ -101,7 +103,9 @@ export const AuthForm = ({ callbackUrl }: { callbackUrl: string | null }) => {
         : zodResolver(ZSignUpSchema),
   });
 
+  const { updateSignInStatus } = useSignInStatus();
   const isSubmitting = form.formState.isSubmitting;
+  const [googleSigning, setGoogleSigning] = useState(false);
 
   const onSignInFormSubmit = async ({ email, password }: TSignInSchema) => {
     try {
@@ -124,6 +128,7 @@ export const AuthForm = ({ callbackUrl }: { callbackUrl: string | null }) => {
       }
 
       setShowDialog(false);
+      updateSignInStatus(true);
       if (callbackUrl) {
         router.push(callbackUrl);
       }
@@ -161,11 +166,14 @@ export const AuthForm = ({ callbackUrl }: { callbackUrl: string | null }) => {
   };
 
   const onAuthWithGoogleClick = async () => {
+    setGoogleSigning(!googleSigning);
     try {
       await signIn("google", {
         redirect: false,
         callbackUrl: "/",
       });
+      setGoogleSigning(!googleSigning);
+      updateSignInStatus(true);
     } catch (err) {
       toast.error("An unknown error occured", {
         description:
@@ -229,8 +237,8 @@ export const AuthForm = ({ callbackUrl }: { callbackUrl: string | null }) => {
         <Button
           type="button"
           size="lg"
-          className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300 hover:cursor-pointer"
-          disabled={isSubmitting}
+          className="flex-1 w-full py-2 mt-6 bg-transparent shadow-[0_0_8px_4px_rgba(37,99,235,0.5)] hover:shadow-[0_0_12px_8px_rgba(37,99,235,0.5)] transition-shadow duration-300 hover:bg-transparent rounded-xl text-blue-500 hover:text-blue-300 hover:cursor-pointer disabled:cursor-not-allowed"
+          disabled={googleSigning}
           onClick={onAuthWithGoogleClick}
         >
           <FcGoogle className="!h-6 !w-6 mr-2" />

@@ -31,30 +31,30 @@ class ImageGenerationService:
         """
         try:
             response = requests.post(
-                "https://router.huggingface.co/replicate/v1/models/tencent/hunyuan-image-2.1/predictions",
-                data={"input": {"prompt": prompt}},
+                "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+                json={"inputs": prompt},
                 headers={
                     "Content-Type": "application/json",
                     "Authorization": f"Bearer {settings.HUGGINGFACE_API_KEY}",
                 },
             )
             response.raise_for_status()
-            prediction = response.json()
 
-            pred_res = requests.get(prediction.urls.stream)
-            pred_res.raise_for_status()
-            image_bytes = pred_res.content()
-
-            content_type = pred_res.headers.get("Content-Type")
+            image_bytes = response.content
+            content_type = response.headers.get("Content-Type")
             ext = mimetypes.guess_extension(content_type)
             filename = f"generated_image{ext or '.jpg'}"
 
             image_content = ContentFile(image_bytes, name=filename)
+            image_obj = Image(video=video)
+            image_obj.image.save(
+                filename,
+                image_content,
+                save=True,
+            )
 
-            image_obj = Image(video=video, image=image_content)
-            image_obj.save()
-
-            url = S3Service.generate_presigned_url(
+            s3_service = S3Service()
+            url = s3_service.generate_presigned_url(
                 image_obj.image.name,
             )
 
@@ -72,7 +72,6 @@ class ImageGenerationService:
                 )
 
             return url
-            # return image_content
 
         except HTTPError as e:
 
@@ -81,27 +80,3 @@ class ImageGenerationService:
                 extra={"user_id": video.user.id, "video_id": video.id},
             )
             raise Exception(f"Error Generating video image: {response.text()}")
-
-    # @staticmethod
-    # def upload_generated_image(img: ContentFile, video: Video) -> str:
-    #     image_obj = Image(video=video, image=img)
-    #     image_obj.save()
-
-    #     url = S3Service.generate_presigned_url(
-    #         image_obj.image.name,
-    #     )
-
-    #     if not url:
-    #         logger.error(
-    #             "Error presigning url to S3 object for generated image",
-    #             extra={
-    #                 "user_id": video.user.id,
-    #                 "video_id": video.id,
-    #                 "image_id": image_obj.id,
-    #             },
-    #         )
-    #         raise Exception(
-    #             f"Error while trying to presign url to S3 object for generated image:{image_obj.id}"
-    #         )
-
-    #     return url
