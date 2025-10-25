@@ -16,7 +16,7 @@ const VideoAnalysisPage = () => {
 
   const searchParams = useSearchParams();
 
-  const newVideoAnalysis = Boolean(searchParams.get("isNew") as string);
+  const newVideoAnalysis = searchParams.get("isNew") === "true";
 
   const videoStatus = useVideoAnalysisTask(videoId).taskStatus;
 

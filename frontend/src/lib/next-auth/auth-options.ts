@@ -108,15 +108,20 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
 
           accessToken: user.access_token,
           refreshToken: user.refresh_token,
+          picture: user.picture ?? null,
           expires: DateTime.now().plus({ minutes: 5 }).toUTC().toString(),
         } satisfies JWT;
       }
 
       if (DateTime.fromISO(token.expires).toUTC() <= DateTime.now().toUTC()) {
         try {
+          console.log("Refresh Token:", token.refreshToken);
+          console.log("Access Token:", token.accessToken);
           const result = await refreshAccessToken({
             refreshToken: token.refreshToken,
           });
+          console.log("Updated Refresh Token:", result.refresh);
+          console.log("Updated Access Token:", result.access);
           resultToken.accessToken = result.access;
           resultToken.refreshToken = result.refresh;
           resultToken.expires = DateTime.now()
@@ -132,17 +137,17 @@ export const NEXT_AUTH_OPTIONS: AuthOptions = {
     },
 
     session({ session, token }) {
-      return {
-        user: {
-          id: token.id,
-          name: token.name,
-          email: token.email,
-          picture: token.picture,
-        },
-        accessToken: token.accessToken,
-        refreshToken: token.refreshToken,
-        expires: token.expires,
-      } satisfies Session;
+      session.user = {
+        id: token.id,
+        name: token.name,
+        email: token.email,
+        picture: token.picture,
+      };
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
+      session.expires = token.expires;
+
+      return session;
     },
   },
 

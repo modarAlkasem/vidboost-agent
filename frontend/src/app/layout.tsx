@@ -7,6 +7,7 @@ import { NextAuthProvider } from "@/providers/next-auth-provider";
 import { QueryProvider } from "@/providers/query-provider";
 
 import { AuthDialogProvider } from "@/contexts/auth-dialog-context";
+import { SignInStatusProvider } from "@/contexts/signin-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,10 +36,12 @@ export default function RootLayout({
       >
         <QueryProvider>
           <NextAuthProvider>
-            <AuthDialogProvider>
-              <Header />
-              <main> {children}</main>
-            </AuthDialogProvider>
+            <SignInStatusProvider>
+              <AuthDialogProvider>
+                <Header />
+                <main> {children}</main>
+              </AuthDialogProvider>
+            </SignInStatusProvider>
           </NextAuthProvider>
         </QueryProvider>
 

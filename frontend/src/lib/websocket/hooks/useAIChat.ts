@@ -61,12 +61,13 @@ export const useAIChat = ({ videoId }: { videoId: string }) => {
             break;
 
           case "message_complete":
+            const content = currentResponseRef.current as string;
             setMessages((prev) => [
               ...prev,
               {
                 id: crypto.randomUUID(),
                 role: "assistant",
-                content: currentResponseRef.current as string,
+                content: content,
                 tool_calls: [],
                 session: sessionID as string,
               },

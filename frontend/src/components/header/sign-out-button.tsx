@@ -7,10 +7,12 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 import { Button } from "../ui/button";
+import { useSignInStatus } from "@/contexts/signin-context";
 
 const SignOutButton = () => {
   const [isSigningOut, setIsSigningOut] = useState(false);
   const router = useRouter();
+  const { updateSignInStatus } = useSignInStatus();
 
   const onButtonClick = async () => {
     try {
@@ -20,6 +22,7 @@ const SignOutButton = () => {
         callbackUrl: "/",
       });
       setIsSigningOut(false);
+      updateSignInStatus(false);
       router.replace("/");
     } catch (err) {
       toast.error("An unknown error occured", {

@@ -44,7 +44,7 @@ class S3Service:
 
         try:
             url = self.s3_client.generate_presigned_url(
-                "get-object",
+                "get_object",
                 Params={"Bucket": self.bucket_name, "Key": s3_key},
                 ExpiresIn=expiration,
             )

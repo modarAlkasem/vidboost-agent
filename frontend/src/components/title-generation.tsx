@@ -2,6 +2,7 @@
 
 import { Copy } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { Usage } from "./usage";
 import { getVideoTitles } from "@/lib/api/video/fetchers";
@@ -16,6 +17,10 @@ export const TitleGeneration = ({ videoId }: { videoId: string }) => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    toast.success("Title copied to clipboard", {
+      position: "bottom-right",
+      duration: 5000,
+    });
   };
 
   return (

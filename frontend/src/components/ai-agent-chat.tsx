@@ -131,33 +131,36 @@ export const AIAgentChat = ({ videoId }: { videoId: string }) => {
               </p>
             </div>
           )}
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+          <div className="min-h-[200px]">
+            {" "}
+            {messages.map((message) => (
               <div
-                className={`max-w-[85%] ${
-                  message.role === "user"
-                    ? "bg-blue-400 text-white"
-                    : "bg-[#3e3e68] [&_*]:text-gray-200"
-                } rounded-2xl px-4 py-3`}
+                key={message.id}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
-                {message.role === "assistant" ? (
-                  <div className="space-y-3">
-                    <div className="prose prose-sm max-w-none">
-                      <ReactMarkdown>{message.content}</ReactMarkdown>
+                <div
+                  className={`max-w-[85%] ${
+                    message.role === "user"
+                      ? "bg-blue-400 text-white"
+                      : "bg-[#3e3e68] [&_*]:text-gray-200"
+                  } rounded-2xl px-4 py-3`}
+                >
+                  {message.role === "assistant" ? (
+                    <div className="space-y-3 ">
+                      <div className="prose prose-sm max-w-none  [&_*]:text-wrap">
+                        <ReactMarkdown>{message.content}</ReactMarkdown>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  message.content
-                )}
+                  ) : (
+                    message.content
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-          <div ref={bottomRef} />
+            ))}
+            <div ref={bottomRef} />
+          </div>
         </div>
       </div>
 

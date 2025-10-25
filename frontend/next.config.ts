@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         hostname: "i.ytimg.com",
         protocol: "https",
       },
+      {
+        hostname: "vidboost-dev-media.s3.amazonaws.com",
+        protocol: "https",
+      },
     ],
   },
 };

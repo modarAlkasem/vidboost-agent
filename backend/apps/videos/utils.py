@@ -1,6 +1,8 @@
 # Python Imports
 import importlib
 import os
+from datetime import datetime
+from pytz import timezone
 
 # Django Imports
 from django.db.models import Model
@@ -12,8 +14,8 @@ def get_generated_video_image_path(instance: Model, file_name: str) -> str:
 
     if isinstance(instance, image_model_cls):
         ext = os.path.splitext(file_name)[1]
-        timestamp_str = "%Y-%m-%d_%H:%M:%S"
+        timestamp_str = datetime.now(tz=timezone("UTC")).strftime("%Y-%m-%d_%H:%M:%S")
 
-        return f"{instance.video.user.id}/video-thumbnails/{timestamp_str}.{ext}"
+        return f"{instance.video.user.id}/video-thumbnails/{timestamp_str}{ext}"
 
     raise TypeError("'instance' arg isn't of type 'videos.Image' model")
