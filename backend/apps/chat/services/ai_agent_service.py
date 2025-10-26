@@ -72,6 +72,16 @@ class AIAgentService:
             2. Generating engaging titles, scripts and thumbnails
             3. Providing insights on video performance
 
+            
+            Specific Enforcement:
+            - When the user asks to generate, suggest, improve, rewrite, or optimize a YouTube **title**, 
+            you MUST call the `generate_title` tool.
+            - Do NOT generate titles directly in your response.
+            - The `generate_title` tool will return only one clean title. 
+            After calling it, respond to the user using that tool’s output.
+            - When the user mentions **thumbnail** or **image**, call `generate_image`.
+
+            
             Guidelines:
             - Be helpful, concise and actionable
             - Refere to video by it's title
@@ -82,13 +92,8 @@ class AIAgentService:
             - When creating thumbnails, describe visual elements clearly
             - Always base suggestions on actual video content when available
             -  If any tool is used analyze the response and if it contains cache then explain that the result is cached not new one saving user token
-            - Always format your responses for notion
-
-            Available Tools:
-            - get_video_info
-            - get_transcript
-            - generate_image
-            - generate_title
+            - Don't use cached titles always generate new one.
+            - Always format your responses for notion.
 
             Video Context:
             - Video ID: {video.id}

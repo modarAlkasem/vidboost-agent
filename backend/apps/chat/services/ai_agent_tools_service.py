@@ -80,7 +80,12 @@ class AIAgentToolsService:
         try:
             img_url = self.image_generation.generate_with_hugginface(prompt, self.video)
 
-            return {"image": img_url}
+            return {
+                "image_url": img_url,
+                "html": f'<img src="{img_url}" alt="Generated Thumbnail" style="max-width: 100%; border-radius: 10px;"/>',
+                "markdown": f"![Generated Thumbnail]({img_url})",
+                "message": "✅ Thumbnail generated successfully!",
+            }
 
         except HTTPError as e:
             return f" Error generating video's thumbnail : {str(e)}"
@@ -104,16 +109,43 @@ class AIAgentToolsService:
 
         messages: List = [
             SystemMessage(
-                content="You are a helpful YouTube video creator assistant that creates high quality SEO friendly concise video titles."
+                content="You are an expert YouTube title strategist who crafts highly clickable, SEO-optimized titles. "
+                "Each title should be emotionally engaging, under 100 characters, and directly relevant to the video content. "
+                "Avoid quotes, emojis, or unnecessary punctuation. Focus on clarity, curiosity, and emotional pull."
             ),
             HumanMessage(
-                content=f"Please provide ONE concise YouTube title (and nothing else) for this video. Focus on the main points and key takeaways, it should be SEO friendly and 100 characters or less:\n\n{summary}\n\n{considerations}"
+                content=f"""
+                    Video Summary:
+                    {summary}
+
+                    User Considerations:
+                    {considerations or "N/A"}
+
+                    Task:
+                    Write one YouTube title only (no explanation, no list). It must:
+                    - Be under 100 characters.
+                    - Use strong keywords that boost search visibility.
+                    - Spark curiosity or emotion (e.g., fear of missing out, surprise, insight).
+                    - Avoid clickbait or misleading claims.
+
+                    Examples:
+                    ✅ "Why Most People Fail at Productivity (and How to Fix It)"
+                    ✅ "The Hidden Science Behind Perfect Sleep"
+                    ✅ "How I Doubled My YouTube Views in 30 Days"
+                    ❌ "My Thoughts on This Video..."
+                    ❌ "Click Here to See!"
+
+                    Now return ONLY the final title, with no quotes or extra text.
+                """
             ),
         ]
 
         try:
             response = groq_llm.invoke(messages)
             title = response.content
+            print("=" * 20)
+            print(response.content)
+            print("=" * 20)
 
             Title.objects.create(title=title, video=self.video)
 
