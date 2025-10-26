@@ -95,7 +95,7 @@ Watch a quick demo of the AI agent in action.
 ### Backend Setup
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/vidboost-ai-agent.git
+git clone https://github.com/modarAlkasem/vidboost-ai-agent.git
 cd vidboost-ai-agent/backend
 
 # Create .env file
