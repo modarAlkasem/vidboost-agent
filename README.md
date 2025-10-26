@@ -16,17 +16,6 @@ Watch a quick demo of the AI agent in action.
   </a>
 </div>
 
-
-<!-- <div align="center">
-  <img src="docs/images/home.png" alt="AI Chat Interface" width="45%">
-  <img src="docs/images/video-analysis-left-section.png" alt="Video Analysis" width="45%">
-</div>
-
-<div align="center">
-  <img src="docs/images/title-generation.png" alt="Title Generation" width="45%">
-  <img src="docs/images/thumbnail-preview.png" alt="Thumbnail Preview" width="45%">
-</div> -->
-
 ---
 
 ## ✨ Features
