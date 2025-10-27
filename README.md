@@ -8,8 +8,6 @@ An intelligent conversational platform that empowers YouTube creators to optimiz
 
 ## 🎥 Demo
 
-Watch a quick demo of the AI agent in action.
-
 <div align="center">
   <a href="docs/images/vidboost-agent.gif" target="_blank" rel="noopener">
     <img src="docs/images/vidboost-agent.gif" alt="VidBoost AI Agent Demo" width="70%">
